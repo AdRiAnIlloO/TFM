@@ -1,0 +1,34 @@
+mod MAUDE-NPA-JSON is
+	protecting DEFINITION-PROTOCOL-RULES-HANDLING .
+	protecting MAUDE-NPA .
+	protecting CONVERSION .
+
+	var N : Nat .
+	var B : Bound .
+	var S : System .
+	var ISS : IdSystemSet .
+	var ISSoE : IdSystemSet-or-Error .
+	var IS : IdSet .
+	var I : Id .
+	var IE : IdElem .
+
+	--- Given an Id, returns a JSON representation, stripping out spaces; no surrounding delimiters.
+	--- NOTE: For the general case, we must use Id as tail, as it has identity, unlike lower sorts in the order relation.
+	op unparseId : Id -> String .
+	eq unparseId(N) = string(N, 10) .
+	eq unparseId(N . I) = unparseId(N) + "." + unparseId(I) .
+
+	--- Given an IdSystemSet, returns a JSON representation, surrounding each Id with escaped quotes
+	op unparseISS : IdSystemSet -> String .
+	eq unparseISS((< I > (S)) empty) = " \"" + unparseId(I) + "\" " .
+	eq unparseISS((< I > (S)) ISS) = " \"" + unparseId(I) + "\"," + unparseISS(ISS) .
+	
+	--- Given a high-level protocol computation  result, returns a JSON representation
+	op toJSON : IdSystemSet-or-Error -> String .
+	eq toJSON(ISS) = "{[" + unparseISS(ISS) + "]}" .
+	eq toJSON(ISSoE) = "" .
+
+	--- A simple convenience wrapper to toJSON
+	op runJSON : Nat Bound -> String .
+	eq runJSON(N, B) = toJSON(debug(N, B)) .
+endm
