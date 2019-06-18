@@ -3,14 +3,22 @@ mod MAUDE-NPA-JSON is
 	protecting MAUDE-NPA .
 	protecting CONVERSION .
 
+	***(Order relation:
+		Nat < IdElem <   Id   < IdSystem < IdSystemSet < IdSystemSet-or-Error
+					   System
+	***)
 	var N : Nat .
 	var B : Bound .
+	var IE : IdElem .
+	var I : Id .
 	var S : System .
+	var IS : IdSystem .
 	var ISS : IdSystemSet .
 	var ISSoE : IdSystemSet-or-Error .
-	var IS : IdSet .
-	var I : Id .
-	var IE : IdElem .
+
+	--- Given a System, returns a JSON representation
+	op toJSON : System -> String .
+	eq toJSON(S) = qidList2string(metaPrettyPrint(['MAUDE-NPA], upTerm(S), none)) .
 
 	--- Given an Id, returns a JSON representation, stripping out spaces; no surrounding delimiters.
 	--- NOTE: For the general case, we must use Id as tail, as it has identity, unlike lower sorts in the order relation.
@@ -20,13 +28,13 @@ mod MAUDE-NPA-JSON is
 
 	--- Given an IdSystemSet, returns a JSON representation, surrounding each Id with escaped quotes
 	op unparseISS : IdSystemSet -> String .
-	eq unparseISS((< I > (S)) empty) = " \"" + unparseId(I) + "\" " .
-	eq unparseISS((< I > (S)) ISS) = " \"" + unparseId(I) + "\"," + unparseISS(ISS) .
-	
+	eq unparseISS((< I > (S)) empty) = "{ \"id\": \"" + unparseId(I) + "\", \"msg\": \"" + toJSON(S) + "\" }" .
+	eq unparseISS((IS) ISS) = unparseISS((IS) empty) + ", " + unparseISS(ISS) [owise] .
+
 	--- Given a high-level protocol computation  result, returns a JSON representation
 	op toJSON : IdSystemSet-or-Error -> String .
-	eq toJSON(ISS) = "{[" + unparseISS(ISS) + "]}" .
-	eq toJSON(ISSoE) = "" .
+	eq toJSON(ISS) = "[" + unparseISS(ISS) + "]" .
+	eq toJSON(ISSoE) = "[]" [owise] .
 
 	--- A simple convenience wrapper to toJSON
 	op runJSON : Nat Bound -> String .
