@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.shape.Ellipse?>
+<?import javafx.scene.text.Font?>
+
+<StackPane fx:id="mWrappingStackPane"
+	xmlns="http://javafx.com/javafx/8.0.171"
+	xmlns:fx="http://javafx.com/fxml/1"
+	fx:controller="jbui.controller.CanvasNodeController">
+	<children>
+		<Ellipse fx:id="mEllipse" fill="DODGERBLUE" radiusX="20.0"
+			radiusY="20.0" stroke="BLACK" strokeLineCap="ROUND"
+			strokeLineJoin="ROUND">
+			<cursor>
+				<Cursor fx:constant="HAND" />
+			</cursor>
+		</Ellipse>
+		<Label fx:id="mIdLabel" alignment="CENTER"
+			contentDisplay="CENTER" text="1" textAlignment="CENTER"
+			textFill="WHITE">
+			<font>
+				<Font size="14.0" />
+			</font>
+			<padding>
+				<Insets left="5.0" right="5.0" />
+			</padding>
+			<cursor>
+				<Cursor fx:constant="HAND" />
+			</cursor>
+		</Label>
+	</children>
+</StackPane>

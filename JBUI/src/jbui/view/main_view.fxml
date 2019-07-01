@@ -1,22 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.Group?>
+<?import javafx.scene.canvas.Canvas?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
 
-<BorderPane xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="jbui.controller.MainController">
+<BorderPane prefHeight="400.0" prefWidth="400.0"
+	xmlns="http://javafx.com/javafx/8.0.171"
+	xmlns:fx="http://javafx.com/fxml/1"
+	fx:controller="jbui.controller.MainController">
 	<top>
-		<MenuBar BorderPane.alignment="CENTER">
+		<MenuBar>
 			<menus>
 				<Menu mnemonicParsing="false" text="File">
 					<items>
-						<MenuItem mnemonicParsing="false" onAction="#onMaudePathsBtnClick" text="Set Maude paths..." />
+						<MenuItem mnemonicParsing="false"
+							onAction="#onMaudePathsBtnClick" text="Set Maude paths..." />
+						<MenuItem mnemonicParsing="false"
+							onAction="#onExitBtnClick" text="Exit" />
 					</items>
 				</Menu>
 				<Menu mnemonicParsing="false" text="Launch">
 					<items>
-						<MenuItem mnemonicParsing="false" onAction="#onLaunchMenuClick" text="Launch now!" />
+						<MenuItem mnemonicParsing="false"
+							onAction="#onNewAttackMenuClick" text="New attack..." />
 					</items>
 				</Menu>
 				<Menu disable="true" mnemonicParsing="false" text="Edit">
@@ -32,4 +48,34 @@
 			</menus>
 		</MenuBar>
 	</top>
+	<center>
+		<StackPane>
+			<children>
+				<Pane fx:id="mCanvasFixesPane">
+					<children>
+						<Canvas fx:id="mDrawingCanvas" height="400.0" width="400.0" />
+					</children>
+				</Pane>
+				<Group StackPane.alignment="TOP_CENTER">
+					<children>
+						<GridPane fx:id="mNodesGridPane" hgap="40.0"
+							layoutX="0.5" layoutY="0.5" prefHeight="40.0" vgap="40.0">
+							<columnConstraints>
+								<ColumnConstraints hgrow="SOMETIMES" />
+							</columnConstraints>
+							<rowConstraints>
+								<RowConstraints vgrow="SOMETIMES" />
+							</rowConstraints>
+						</GridPane>
+					</children>
+					<StackPane.margin>
+						<Insets top="5.0" />
+					</StackPane.margin>
+				</Group>
+			</children>
+			<cursor>
+				<Cursor fx:constant="OPEN_HAND" />
+			</cursor>
+		</StackPane>
+	</center>
 </BorderPane>

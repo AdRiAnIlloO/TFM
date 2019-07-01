@@ -6,25 +6,38 @@ import java.net.URL;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
+import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
+import jbui.controller.MainController;
 
 public class JBUI extends Application
 {
 	public static JBUI sInstance;
 
-	public Stage mStage;
-	public MaudeThinker mMaudeThinker;
-
-	public String mMaudeBinPath; // Maude bin
-	public String mJSONModulePath;
-	public String mNPAModulePath;
-	public String mProtocolModulePath;
-
-	public static void main(String[] args)
+	static Canvas getDrawingCanvas()
 	{
-		launch(args);
+		return sInstance.mMainController.mDrawingCanvas;
+	}
+
+	public static File getJSONModuleFile()
+	{
+		return sInstance.mJSONModuleFile;
+	}
+
+	public static File getMaudeBinFile()
+	{
+		return sInstance.mMaudeBinFile;
+	}
+
+	public static Process getMaudeProcess()
+	{
+		return sInstance.mMaudeProcess;
 	}
 
 	public static MaudeThinker getMaudeThinker()
@@ -32,56 +45,106 @@ public class JBUI extends Application
 		return sInstance.mMaudeThinker;
 	}
 
-	public static String getMaudeBinPath()
+	public static GridPane getNodesGridPane()
 	{
-		return sInstance.mMaudeBinPath;
+		return sInstance.mMainController.mNodesGridPane;
 	}
 
-	public static String getJSONModulePath()
+	public static File getNPAModuleFile()
 	{
-		return sInstance.mJSONModulePath;
+		return sInstance.mNPAModuleFile;
 	}
 
-	public static String getNPAModulePath()
+	public static File getProtocolModuleFile()
 	{
-		return sInstance.mNPAModulePath;
+		return sInstance.mProtocolModuleFile;
 	}
 
-	public static String getProtocolModulePath()
+	protected static URL getResource(String name)
 	{
-		return sInstance.mProtocolModulePath;
+		return JBUI.class.getResource(name);
 	}
+
+	/**
+	 * @param textField
+	 * @param updatedFile
+	 * @param lastConfirmedDirectory
+	 * @return If final updatedFiles valid, its parent directory. Otherwise,
+	 *         lastConfirmedDirectory
+	 */
+	public static File handlePathDialogResult(TextField textField, File updatedFile, File lastConfirmedDirectory)
+	{
+		if (updatedFile != null)
+		{
+			textField.setText(updatedFile.getAbsolutePath());
+			lastConfirmedDirectory = updatedFile.getParentFile();
+		}
+
+		return lastConfirmedDirectory;
+	}
+
+	public static void main(String[] args)
+	{
+		launch(args);
+	}
+
+	public static File showMaudePathDialog(TextField textField, File lastConfirmedDirectory)
+	{
+		ExtensionFilter filter = new ExtensionFilter("Maude files", "*.maude");
+		return showPathDialog(textField, filter, lastConfirmedDirectory);
+	}
+
+	/**
+	 * Shows a path search dialog with an associated TextField path for feedback
+	 * 
+	 * @param textField
+	 * @param filter
+	 * @param lastConfirmedDirectory Last parent directory user was located while in
+	 *                               previous search dialogs
+	 * @return Final choosen file
+	 */
+	public static File showPathDialog(TextField textField, ExtensionFilter filter, File lastConfirmedDirectory)
+	{
+		FileChooser chooser = new FileChooser();
+		chooser.setInitialDirectory(lastConfirmedDirectory);
+
+		if (filter != null)
+		{
+			chooser.getExtensionFilters().add(filter);
+		}
+
+		return chooser.showOpenDialog(sInstance.mStage);
+	}
+
+	private File mJSONModuleFile;
+
+	private MainController mMainController;
+
+	public File mMaudeBinFile; // Maude bin
+
+	// An auxiliar process. It may not be used currently until next re-launch.
+	public Process mMaudeProcess;
+
+	private MaudeThinker mMaudeThinker;
+
+	public File mNPAModuleFile;
+
+	public File mProtocolModuleFile;
+
+	private Stage mStage;
 
 	public JBUI()
 	{
-		mStage = null; // Delayed to start()
 		mMaudeThinker = new MaudeThinker();
-		mJSONModulePath = null;
-		mNPAModulePath = null;
-		mProtocolModulePath = null;
 
 		// Resolve Maude bin path to a full path via PATH environment
-		mMaudeBinPath = findExecutableOnPath("maude");
+		mMaudeBinFile = findExecutableOnPath("maude");
+
+		String pathName = getClass().getResource("resource/maude_npa_json.maude").getPath();
+		mJSONModuleFile = new File(pathName);
 	}
 
-	@Override
-	public void start(Stage primaryStage) throws IOException
-	{
-		sInstance = this;
-		mStage = primaryStage;
-		mMaudeThinker.start();
-
-		// Load main window
-		URL url = getClass().getResource("view/main_view.fxml");
-		Parent root = FXMLLoader.load(url);
-		Scene scene = new Scene(root, 400, 400);
-		String formStr = getClass().getResource("application.css").toExternalForm();
-		scene.getStylesheets().add(formStr);
-		primaryStage.setScene(scene);
-		primaryStage.show();
-	}
-
-	private String findExecutableOnPath(String name)
+	private File findExecutableOnPath(String name)
 	{
 		String osName = System.getProperty("os.name");
 
@@ -96,10 +159,37 @@ public class JBUI extends Application
 
 			if (file.isFile() && file.canExecute())
 			{
-				return file.getAbsolutePath();
+				return file;
 			}
 		}
 
-		return name;
+		return null;
+	}
+
+	@Override
+	public void start(Stage primaryStage) throws IOException
+	{
+		sInstance = this;
+		mStage = primaryStage;
+		mMaudeThinker.start();
+
+		// Load main window
+		URL url = getClass().getResource("view/main_view.fxml");
+		FXMLLoader loader = new FXMLLoader(url);
+		BorderPane root = loader.load();
+		mMainController = loader.getController();
+		Scene scene = new Scene(root);
+		String formStr = getClass().getResource("application.css").toExternalForm();
+		scene.getStylesheets().add(formStr);
+		primaryStage.setScene(scene);
+		primaryStage.show();
+
+		// Set minimum window dimensions from computed FXML's, as a convenient UX factor
+		primaryStage.setMinWidth(primaryStage.getWidth());
+		primaryStage.setMinHeight(primaryStage.getHeight());
+
+		// Prompt already the general paths controller setup window, for convenience
+		MainController controller = loader.getController();
+		controller.showGeneralPathsWindow();
 	}
 }
