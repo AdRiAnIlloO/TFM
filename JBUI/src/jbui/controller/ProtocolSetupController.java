@@ -47,12 +47,13 @@ public class ProtocolSetupController implements ICloseHandleableDialogController
 			JBUI.sInstance.mProtocolModuleFile = mProtocolModuleFile;
 
 			// Validate only the user-configurable dependencies, which may be invalid
-			if (JBUI.getMaudeProcess() != null && JBUI.getNPAModuleFile() != null && JBUI.getJSONModuleFile() != null)
+			if (JBUI.getMaudeProcess() != null && JBUI.getNPAModuleFile() != null
+					&& JBUI.getJSONModuleTextContent() != null)
 			{
 				assert (JBUI.getMaudeBinFile() != null);
 
 				if (!JBUI.getMaudeThinker().tryInitializeNow(JBUI.getMaudeBinFile(), JBUI.getMaudeProcess(),
-						JBUI.getJSONModuleFile(), JBUI.getNPAModuleFile(), mProtocolModuleFile))
+						JBUI.getJSONModuleTextContent(), JBUI.getNPAModuleFile(), mProtocolModuleFile))
 				{
 					Alert alert = new Alert(AlertType.WARNING);
 					alert.setContentText("Sorry, couldn't start the initial conversation with Maude");

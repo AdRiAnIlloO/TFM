@@ -19,7 +19,6 @@ public class GeneralPathsController implements ICloseHandleableDialogController
 	private File mLastMaudeBinDir;
 
 	private File mLastNPAModuleDir;
-
 	private File mMaudeBinFile;
 
 	@FXML
@@ -27,11 +26,13 @@ public class GeneralPathsController implements ICloseHandleableDialogController
 
 	@FXML
 	private Label mMaudeBinStatus;
-	private Process mMaudeProcess;
 
+	private Process mMaudeProcess;
 	private File mNPAModuleFile;
+
 	@FXML
 	private TextField mNPAModulePath;
+
 	@FXML
 	private Label mNPAModuleStatus;
 
@@ -86,7 +87,7 @@ public class GeneralPathsController implements ICloseHandleableDialogController
 	{
 		mMaudeBinPath.textProperty().addListener((observable, oldPath, newPath) -> validateMaudeBinPath(newPath));
 		mNPAModulePath.textProperty().addListener((observable, oldPath, newPath) -> validateNPAModulePath(newPath));
-		mJSONModulePath.setText(JBUI.getJSONModuleFile().getAbsolutePath());
+		mJSONModulePath.setText(JBUI.DEFAULT_JSON_MODULE_PATH);
 
 		if (mMaudeBinFile != null)
 		{

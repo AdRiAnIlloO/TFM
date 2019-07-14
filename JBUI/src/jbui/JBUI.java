@@ -1,7 +1,10 @@
 package jbui;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URL;
 
 import javafx.application.Application;
@@ -18,6 +21,8 @@ import jbui.controller.MainController;
 
 public class JBUI extends Application
 {
+	public static String DEFAULT_JSON_MODULE_PATH = "resource/maude_npa_json.maude";
+
 	public static JBUI sInstance;
 
 	static Canvas getDrawingCanvas()
@@ -25,9 +30,9 @@ public class JBUI extends Application
 		return sInstance.mMainController.mDrawingCanvas;
 	}
 
-	public static File getJSONModuleFile()
+	public static String getJSONModuleTextContent()
 	{
-		return sInstance.mJSONModuleFile;
+		return sInstance.mJSONModuleTextContent;
 	}
 
 	public static File getMaudeBinFile()
@@ -116,7 +121,9 @@ public class JBUI extends Application
 		return chooser.showOpenDialog(sInstance.mStage);
 	}
 
-	private File mJSONModuleFile;
+	// We store JSON module content directly to load correctly on Maude when it must
+	// be read from within the JAR
+	private String mJSONModuleTextContent;
 
 	private MainController mMainController;
 
@@ -133,15 +140,20 @@ public class JBUI extends Application
 
 	private Stage mStage;
 
-	public JBUI()
+	public JBUI() throws IOException
 	{
 		mMaudeThinker = new MaudeThinker();
 
 		// Resolve Maude bin path to a full path via PATH environment
 		mMaudeBinFile = findExecutableOnPath("maude");
 
-		String pathName = getClass().getResource("resource/maude_npa_json.maude").getPath();
-		mJSONModuleFile = new File(pathName);
+		// Load JSON module
+		mJSONModuleTextContent = "";
+		InputStream jsonModuleStream = getClass().getResourceAsStream(DEFAULT_JSON_MODULE_PATH);
+		InputStreamReader jsonModuleStreamReader = new InputStreamReader(jsonModuleStream);
+		BufferedReader jsonModuleBufferedReader = new BufferedReader(jsonModuleStreamReader);
+		for (String line; (line = jsonModuleBufferedReader.readLine()) != null; mJSONModuleTextContent += line
+				+ System.lineSeparator());
 	}
 
 	private File findExecutableOnPath(String name)

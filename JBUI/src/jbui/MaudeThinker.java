@@ -33,7 +33,6 @@ public class MaudeThinker extends AnimationTimer
 	// to deal with some cases where the CWD is translated to a
 	// different filesystem than host's (e.g. Windows + Cygwin).
 	// This causes only relative paths succeed in loading modules.
-	private String mRelJSONModulePath;
 	private String mRelNPAModulePath;
 
 	private String mRelProtocolModulePath;
@@ -142,8 +141,8 @@ public class MaudeThinker extends AnimationTimer
 		}
 	}
 
-	public boolean tryInitializeNow(File maudeBinFile, Process maudeProcess, File jsonModuleFile, File npaModuleFile,
-			File protocolModuleFile)
+	public boolean tryInitializeNow(File maudeBinFile, Process maudeProcess, String jsonModuleTextContent,
+			File npaModuleFile, File protocolModuleFile)
 	{
 		if (maudeProcess != mMaudeProcess)
 		{
@@ -155,7 +154,6 @@ public class MaudeThinker extends AnimationTimer
 			mMaudeProcess = maudeProcess;
 		}
 
-		mRelJSONModulePath = relativizePathFromMaudeBin(maudeBinFile, JBUI.getJSONModuleFile());
 		mRelNPAModulePath = relativizePathFromMaudeBin(maudeBinFile, JBUI.getNPAModuleFile());
 		mRelProtocolModulePath = relativizePathFromMaudeBin(maudeBinFile, JBUI.getProtocolModuleFile());
 
@@ -171,7 +169,7 @@ public class MaudeThinker extends AnimationTimer
 
 			// Start initial talk with Maude
 			talkToMaude("load %s .", mRelNPAModulePath);
-			talkToMaude("load %s .", mRelJSONModulePath);
+			talkToMaude(jsonModuleTextContent);
 			talkToMaude("load %s .", mRelProtocolModulePath);
 			talkToMaude("red in MAUDE-NPA-JSON : runJSON(0, 1) .");
 			talkToMaude("red in MAUDE-NPA-JSON : runJSON(0, 2) .");
