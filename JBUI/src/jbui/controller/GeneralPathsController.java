@@ -1,7 +1,6 @@
 package jbui.controller;
 
 import java.io.File;
-import java.io.IOException;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -9,16 +8,17 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import jbui.JBUI;
+import jbui.persistence.DAO;
+import jbui.persistence.JSONModuleLoadDAO;
+import jbui.persistence.MaudeExecutableLoadDAO;
+import jbui.persistence.NPAModuleLoadDAO;
 
-public class GeneralPathsController implements ICloseHandleableDialogController
+public class GeneralPathsController extends PathsSetupController
 {
-	@FXML
-	private TextField mJSONModulePath;
-
 	// Last directories upon file search dialog close
 	private File mLastMaudeBinDir;
-
 	private File mLastNPAModuleDir;
+
 	private File mMaudeBinFile;
 
 	@FXML
@@ -27,7 +27,6 @@ public class GeneralPathsController implements ICloseHandleableDialogController
 	@FXML
 	private Label mMaudeBinStatus;
 
-	private Process mMaudeProcess;
 	private File mNPAModuleFile;
 
 	@FXML
@@ -39,7 +38,7 @@ public class GeneralPathsController implements ICloseHandleableDialogController
 	public GeneralPathsController()
 	{
 		mMaudeBinFile = JBUI.getMaudeBinFile();
-		mNPAModuleFile = JBUI.getNPAModuleFile();
+		mNPAModuleFile = JBUI.sInstance.mNPAModuleFile;
 
 		if (mMaudeBinFile != null)
 		{
@@ -50,96 +49,126 @@ public class GeneralPathsController implements ICloseHandleableDialogController
 		{
 			mLastNPAModuleDir = mNPAModuleFile.getParentFile();
 		}
-		else if (mMaudeBinFile != null)
-		{
-			// Fallback to the Maude bin directory, as it may be near the NPA one
-			mLastNPAModuleDir = mLastMaudeBinDir;
-		}
 	}
 
 	@Override
-	public void handleClosed(ButtonType buttonType)
+	void handleClose(ButtonType buttonType)
 	{
 		if (buttonType == ButtonType.OK)
 		{
+			handleCloseViaConfirmation();
 			JBUI.sInstance.mMaudeBinFile = mMaudeBinFile;
 			JBUI.sInstance.mNPAModuleFile = mNPAModuleFile;
-
-			if (mMaudeProcess != null)
-			{
-				if (JBUI.getMaudeProcess() != null)
-				{
-					JBUI.getMaudeProcess().destroy();
-				}
-
-				JBUI.sInstance.mMaudeProcess = mMaudeProcess;
-			}
+			JBUI.getMaudeThinker().tryUpdateMainComponents();
 		}
-		else if (mMaudeProcess != null)
+		else
 		{
-			mMaudeProcess.destroy();
-			mMaudeProcess = null;
+			JBUI.getMaudeThinker().mNextNPAModuleTextInput = null;
+			JBUI.getMaudeThinker().setNextMaudeProcess(null);
 		}
 	}
 
-	@FXML
-	public void initialize()
+	private void handleMaudeBinPathChange(String maudeBinPathName, File maudeBinFile)
 	{
-		mMaudeBinPath.textProperty().addListener((observable, oldPath, newPath) -> validateMaudeBinPath(newPath));
-		mNPAModulePath.textProperty().addListener((observable, oldPath, newPath) -> validateNPAModulePath(newPath));
-		mJSONModulePath.setText(JBUI.DEFAULT_JSON_MODULE_PATH);
+		DAO dao = new MaudeExecutableLoadDAO(this, maudeBinPathName, maudeBinFile);
+		handleModulePathChange(mMaudeBinStatus, dao);
+	}
 
-		if (mMaudeBinFile != null)
+	public void handleMaudeProcessLoadResult(Process maudeProcess, String maudeBinPathName)
+	{
+		if (mDialogPane.isVisible())
 		{
-			mMaudeBinPath.setText(mMaudeBinFile.getAbsolutePath());
+			JBUI.getMaudeThinker().setNextMaudeProcess(maudeProcess);
+			mMaudeBinPath.setText(maudeBinPathName);
+
+			if (maudeProcess != null)
+			{
+				handleModuleLoadOk(mMaudeBinStatus);
+				return;
+			}
+
+			handleModuleLoadErrorWhileVisible(mMaudeBinStatus);
 		}
+	}
 
-		if (mNPAModuleFile != null)
+	public void handleNPAModuleLoad(String npaModuleTextInput)
+	{
+		if (handleModuleLoadOk(mNPAModuleStatus))
 		{
-			mNPAModulePath.setText(mNPAModuleFile.getAbsolutePath());
+			JBUI.getMaudeThinker().mNextNPAModuleTextInput = npaModuleTextInput;
+		}
+	}
+
+	private void handleNPAModulePathChange()
+	{
+		DAO dao = new NPAModuleLoadDAO(this, mNPAModuleFile);
+		handleModulePathChange(mNPAModuleStatus, dao);
+	}
+
+	public void notifyJSONModuleLoad(String jsonModuleTextInput)
+	{
+		if (handleModuleLoadOk())
+		{
+			JBUI.getMaudeThinker().mJSONModuleTextInput = jsonModuleTextInput;
 		}
 	}
 
 	@FXML
 	private void onMaudeBinPathSearchBtnClick(ActionEvent event)
 	{
-		mMaudeBinFile = JBUI.showPathDialog(mMaudeBinPath, null, mLastMaudeBinDir);
+		mMaudeBinFile = showPathDialog(mMaudeBinPath, null, mLastMaudeBinDir);
 		mLastMaudeBinDir = JBUI.handlePathDialogResult(mMaudeBinPath, mMaudeBinFile, mLastMaudeBinDir);
+
+		if (mMaudeBinFile != null)
+		{
+			handleMaudeBinPathChange(mMaudeBinFile.getAbsolutePath(), mMaudeBinFile);
+		}
 	}
 
 	@FXML
 	private void onNPAModulePathSearchBtnClick(ActionEvent event)
 	{
-		mNPAModuleFile = JBUI.showMaudePathDialog(mNPAModulePath, mLastNPAModuleDir);
+		mNPAModuleFile = showMaudePathDialog(mNPAModulePath, mLastNPAModuleDir);
 		mLastNPAModuleDir = JBUI.handlePathDialogResult(mNPAModulePath, mNPAModuleFile, mLastNPAModuleDir);
-	}
 
-	private void validateMaudeBinPath(String path)
-	{
-		if (mMaudeProcess != null)
+		if (mNPAModuleFile != null)
 		{
-			mMaudeProcess.destroy();
-			mMaudeProcess = null;
-		}
-
-		try
-		{
-			ProcessBuilder builder = new ProcessBuilder(path);
-			builder.redirectErrorStream(true);
-			mMaudeProcess = builder.start();
-			mMaudeBinStatus.setText("OK");
-			mMaudeBinStatus.setStyle("-fx-text-fill: green;");
-		}
-		catch (IOException e)
-		{
-			mMaudeBinStatus.setText("Failed");
-			mMaudeBinStatus.setStyle("-fx-text-fill: red;");
+			handleNPAModulePathChange();
 		}
 	}
 
-	private void validateNPAModulePath(String path)
+	@Override
+	void postInitialize()
 	{
-		mNPAModuleStatus.setText("OK");
-		mNPAModuleStatus.setStyle("-fx-text-fill: green;");
+		String maudeBinPathName;
+
+		if (mMaudeBinFile != null)
+		{
+			maudeBinPathName = mMaudeBinFile.getAbsolutePath();
+		}
+		else
+		{
+			// Resolve Maude bin path to a full path via PATH environment
+			maudeBinPathName = "maude";
+			String osName = System.getProperty("os.name");
+
+			if (osName.startsWith("Windows") && !maudeBinPathName.endsWith(".exe"))
+			{
+				maudeBinPathName += ".exe";
+			}
+		}
+
+		mMaudeBinPath.setText(maudeBinPathName);
+		handleMaudeBinPathChange(maudeBinPathName, mMaudeBinFile);
+
+		if (mNPAModuleFile != null)
+		{
+			mNPAModulePath.setText(mNPAModuleFile.getAbsolutePath());
+			handleNPAModulePathChange();
+		}
+
+		// Request loading JSON module
+		DAO dao = new JSONModuleLoadDAO(this, "resource/maude_npa_json.maude");
+		handleModulePathChange(dao);
 	}
 }

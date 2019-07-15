@@ -1,4 +1,4 @@
-package jbui;
+package jbui.model;
 
 import java.io.IOException;
 import java.net.URL;
@@ -7,6 +7,7 @@ import java.util.List;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.canvas.GraphicsContext;
+import jbui.JBUI;
 import jbui.controller.CanvasNodeController;
 
 class IdSystemNode
@@ -22,7 +23,7 @@ class IdSystemNode
 
 	private String mMsg;
 
-	protected IdSystemNode(String idText, String msg) throws IOException
+	IdSystemNode(String idText, String msg) throws IOException
 	{
 		URL url = JBUI.getResource("view/canvas_node.fxml");
 		FXMLLoader loader = new FXMLLoader(url);
@@ -47,7 +48,7 @@ class IdSystemNode
 		}
 	}
 
-	protected int addToGridPane(int columnIndex, int rowIndex, CanvasNodeController parentController)
+	int addToGridPane(int columnIndex, int rowIndex, CanvasNodeController parentController)
 	{
 		int leafNodeAmount = 0;
 		int childrenRowIndex = rowIndex + 1;
@@ -63,7 +64,7 @@ class IdSystemNode
 		return leafNodeAmount;
 	}
 
-	protected void drawArcs(IdSystemNode parent, GraphicsContext ctx)
+	void drawArcs(IdSystemNode parent, GraphicsContext ctx)
 	{
 		ctx.setLineWidth(PARENT_TO_CHILD_ARC_WIDTH);
 
@@ -87,7 +88,7 @@ class IdSystemNode
 		return false;
 	}
 
-	protected boolean insert(IdSystemNode otherChild)
+	boolean insert(IdSystemNode otherChild)
 	{
 		// Search first mismatching breadth position among the max common depth level
 		for (int i = 0, maxDepth = Math.min(mIdPositions.size(), otherChild.mIdPositions.size()); i < maxDepth; i++)

@@ -1,16 +1,11 @@
 package jbui.controller;
 
 import java.io.IOException;
-import java.net.URL;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
@@ -32,9 +27,13 @@ public class MainController
 	private StackPane mTest;
 
 	@FXML
-	protected void initialize()
+	private void initialize()
 	{
+		JBUI.sInstance.mMainController = this;
 		mDrawingCanvas.widthProperty().bind(mCanvasFixesPane.widthProperty());
+
+		// Prompt earlier the general paths controller setup window, for convenience
+		showConfirmationAlert(GeneralPathsAlert.class);
 	}
 
 	@FXML
@@ -46,33 +45,24 @@ public class MainController
 	@FXML
 	private void onMaudePathsBtnClick(ActionEvent event) throws IOException
 	{
-		showGeneralPathsWindow();
+		showConfirmationAlert(GeneralPathsAlert.class);
 	}
 
 	@FXML
 	private void onNewAttackMenuClick(ActionEvent event) throws IOException
 	{
-		showCloseHandleableDialogController("view/protocol_setup_window.fxml", "New attack setup",
-				"Here you can load a protocol file and set execution options, and trigger an execution");
+		showConfirmationAlert(ProtocolSetupAlert.class);
 	}
 
-	private void showCloseHandleableDialogController(String resourcePathName, String title, String headerText)
-			throws IOException
+	private <T extends PathsSetupAlert<S>, S extends PathsSetupController> void showConfirmationAlert(Class<T> type)
 	{
-		URL url = JBUI.class.getResource(resourcePathName);
-		FXMLLoader loader = new FXMLLoader(url);
-		Parent contentNode = loader.load();
-		Alert alert = new Alert(AlertType.CONFIRMATION);
-		alert.setTitle(title);
-		alert.setHeaderText(headerText);
-		alert.getDialogPane().setContent(contentNode);
-		ICloseHandleableDialogController controller = loader.getController();
-		alert.showAndWait().ifPresent((buttonType) -> controller.handleClosed(buttonType));
-	}
-
-	public void showGeneralPathsWindow() throws IOException
-	{
-		showCloseHandleableDialogController("view/general_paths_window.fxml", "Maude paths setup",
-				"Here you can configure the basic required Maude files that any execution uses");
+		try
+		{
+			type.newInstance().showAndWaitAndHandle();
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
 }
