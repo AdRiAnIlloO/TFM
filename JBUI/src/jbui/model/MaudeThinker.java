@@ -72,11 +72,6 @@ public class MaudeThinker extends AnimationTimer
 
 			JSONArray jsonIdSystemArray = new JSONArray(jsonText);
 
-			if (mRootIdSystemNode == null)
-			{
-				mRootIdSystemNode = new IdSystemNode("1", "");
-			}
-
 			for (int i = 0; i < jsonIdSystemArray.length(); i++)
 			{
 				JSONObject jsonIdSystem = jsonIdSystemArray.getJSONObject(i);
@@ -154,8 +149,18 @@ public class MaudeThinker extends AnimationTimer
 	{
 		try
 		{
+			if (mRootIdSystemNode != null)
+			{
+				mRootIdSystemNode.removeChildrenFromModelAndGridPane();
+			}
+			else
+			{
+				// We show the initial node, which is not an attack state.
+				// Maude-NPA shares this idea, such that no returned state can be the root.
+				mRootIdSystemNode = new IdSystemNode("1", "");
+			}
+
 			updateMainComponents();
-			mRootIdSystemNode = null;
 			talkToMaude(protocolModuleTextInput);
 			talkToMaude("red in MAUDE-NPA-JSON : runJSON(0, 1) .");
 			talkToMaude("red in MAUDE-NPA-JSON : runJSON(0, 2) .");

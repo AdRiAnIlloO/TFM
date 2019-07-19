@@ -129,4 +129,15 @@ class IdSystemNode
 
 		return false;
 	}
+
+	void removeChildrenFromModelAndGridPane()
+	{
+		for (IdSystemNode child : mChildren)
+		{
+			child.mController.hideFromGridPane();
+			child.removeChildrenFromModelAndGridPane();
+		}
+
+		mChildren.clear();
+	}
 }

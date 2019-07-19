@@ -50,6 +50,11 @@ public class CanvasNodeController
 		ctx.strokeLine(x0, y0, x1, y1);
 	}
 
+	public void hideFromGridPane()
+	{
+		JBUI.getNodesGridPane().getChildren().remove(mWrappingStackPane);
+	}
+
 	@FXML
 	private void initialize()
 	{
