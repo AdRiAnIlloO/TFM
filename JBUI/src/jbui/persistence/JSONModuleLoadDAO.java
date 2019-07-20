@@ -18,6 +18,11 @@ public class JSONModuleLoadDAO extends ModuleLoadDAO<GeneralPathsController>
 	@Override
 	boolean shouldReplaceThisInList(DAO other)
 	{
-		return (other instanceof JSONModuleLoadDAO);
+		if (other instanceof JSONModuleLoadDAO)
+		{
+			return shouldReplaceThisInList((JSONModuleLoadDAO) other);
+		}
+
+		return false;
 	}
 }

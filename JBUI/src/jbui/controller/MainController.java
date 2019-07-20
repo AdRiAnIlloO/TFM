@@ -51,10 +51,10 @@ public class MainController
 	@FXML
 	private void onNewAttackMenuClick(ActionEvent event) throws IOException
 	{
-		showConfirmationAlert(ProtocolSetupAlert.class);
+		showConfirmationAlert(ProtocolPathAlert.class);
 	}
 
-	private <T extends PathsSetupAlert<S>, S extends PathsSetupController> void showConfirmationAlert(Class<T> type)
+	private <T extends LoadablesAlert<S>, S extends LoadablesController> void showConfirmationAlert(Class<T> type)
 	{
 		try
 		{

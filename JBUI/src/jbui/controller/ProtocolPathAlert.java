@@ -1,8 +1,8 @@
 package jbui.controller;
 
-class ProtocolSetupAlert extends PathsSetupAlert<ProtocolSetupController>
+class ProtocolPathAlert extends LoadablesAlert<ProtocolPathController>
 {
-	ProtocolSetupAlert()
+	ProtocolPathAlert()
 	{
 		super("New attack setup",
 				"Here you can load a protocol file and set execution options, and trigger an execution",

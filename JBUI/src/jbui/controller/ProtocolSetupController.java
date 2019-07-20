@@ -13,8 +13,13 @@ import jbui.JBUI;
 import jbui.persistence.DAO;
 import jbui.persistence.ProtocolModuleLoadDAO;
 
-public class ProtocolSetupController extends PathsSetupController
+public class ProtocolPathController extends LoadablesController
 {
+	private enum ModuleType
+	{
+		Protocol
+	}
+
 	// Last directory upon file search dialog close
 	private File mLastProtocolModuleDirectory;
 
@@ -65,12 +70,19 @@ public class ProtocolSetupController extends PathsSetupController
 				alert.setContentText("Sorry, couldn't start the initial conversation with Maude");
 				alert.showAndWait();
 			}
+			else
+			{
+				LoadablesAlert<ProtocolInitController> alert = new LoadablesAlert<>("Protocol initialization",
+						String.format("Initialize the protocol '%s'", mProtocolModuleFile.getAbsolutePath()),
+						"view/protocol_init_window.fxml");
+				alert.showAndWaitAndHandle();
+			}
 		}
 	}
 
 	public void handleProtocolModuleLoad(String protocolModuleTextInput)
 	{
-		if (handleModuleLoadOk(mProtocolModuleStatus))
+		if (handleModuleLoadOk(mProtocolModuleStatus, ModuleType.Protocol))
 		{
 			mProtocolModuleTextInput = protocolModuleTextInput;
 		}
@@ -85,12 +97,13 @@ public class ProtocolSetupController extends PathsSetupController
 	@FXML
 	private void onProtocolModuleSearchBtnClick(ActionEvent event)
 	{
-		mProtocolModuleFile = showMaudePathDialog(mProtocolModulePath, mLastProtocolModuleDirectory);
-		mLastProtocolModuleDirectory = JBUI.handlePathDialogResult(mProtocolModulePath, mProtocolModuleFile,
-				mLastProtocolModuleDirectory);
+		File protocolModuleFile = showMaudePathDialog(mProtocolModulePath, mLastProtocolModuleDirectory);
 
-		if (mProtocolModuleFile != null)
+		if (protocolModuleFile != null)
 		{
+			mLastProtocolModuleDirectory = handlePathDialogResult(mProtocolModulePath, protocolModuleFile,
+					mLastProtocolModuleDirectory);
+			mProtocolModuleFile = protocolModuleFile;
 			handleProtocolModulePathChange();
 		}
 	}

@@ -50,12 +50,17 @@ public class MaudeExecutableLoadDAO extends ResultsHandlingDAO
 	@Override
 	void handleResults()
 	{
-		mController.handleMaudeProcessLoadResult(mMaudeProcess, mMaudeBinPathName);
+		mController.handleMaudeProcessLoadResult(mMaudeProcess, mMaudeBinFile);
 	}
 
 	@Override
 	boolean shouldReplaceThisInList(DAO other)
 	{
-		return (other instanceof MaudeExecutableLoadDAO);
+		if (other instanceof MaudeExecutableLoadDAO)
+		{
+			return shouldReplaceThisInList(other);
+		}
+
+		return false;
 	}
 }

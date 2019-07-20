@@ -13,8 +13,13 @@ import jbui.persistence.JSONModuleLoadDAO;
 import jbui.persistence.MaudeExecutableLoadDAO;
 import jbui.persistence.NPAModuleLoadDAO;
 
-public class GeneralPathsController extends PathsSetupController
+public class GeneralPathsController extends LoadablesController
 {
+	private enum ModuleType
+	{
+		MaudeBin, NPA
+	}
+
 	// Last directories upon file search dialog close
 	private File mLastMaudeBinDir;
 	private File mLastNPAModuleDir;
@@ -49,6 +54,17 @@ public class GeneralPathsController extends PathsSetupController
 		{
 			mLastNPAModuleDir = mNPAModuleFile.getParentFile();
 		}
+
+		// Fallback each missing last directory to the other,
+		// to make the user likely locate the each module more easily
+		if (mLastMaudeBinDir == null)
+		{
+			mLastMaudeBinDir = mLastNPAModuleDir;
+		}
+		else if (mLastNPAModuleDir == null)
+		{
+			mLastNPAModuleDir = mLastMaudeBinDir;
+		}
 	}
 
 	@Override
@@ -74,28 +90,44 @@ public class GeneralPathsController extends PathsSetupController
 		handleModulePathChange(mMaudeBinStatus, dao);
 	}
 
-	public void handleMaudeProcessLoadResult(Process maudeProcess, String maudeBinPathName)
+	public void handleMaudeProcessLoadResult(Process maudeProcess, File maudeBinFile)
 	{
 		if (mDialogPane.isVisible())
 		{
 			JBUI.getMaudeThinker().setNextMaudeProcess(maudeProcess);
-			mMaudeBinPath.setText(maudeBinPathName);
 
 			if (maudeProcess != null)
 			{
-				handleModuleLoadOk(mMaudeBinStatus);
+				handleModuleLoadOk(mMaudeBinStatus, ModuleType.MaudeBin);
+				mMaudeBinFile = maudeBinFile;
+				mMaudeBinPath.setText(maudeBinFile.getAbsolutePath());
+				mLastMaudeBinDir = maudeBinFile.getParentFile();
+
+				// Make the user likely locate the missing NPA module more easily
+				if (mLastNPAModuleDir == null)
+				{
+					mLastNPAModuleDir = mLastMaudeBinDir;
+				}
+
 				return;
 			}
 
-			handleModuleLoadErrorWhileVisible(mMaudeBinStatus);
+			mMaudeBinFile = null;
+			handleModuleLoadErrorWhileVisible(mMaudeBinStatus, ModuleType.MaudeBin);
 		}
 	}
 
 	public void handleNPAModuleLoad(String npaModuleTextInput)
 	{
-		if (handleModuleLoadOk(mNPAModuleStatus))
+		if (handleModuleLoadOk(mNPAModuleStatus, ModuleType.NPA))
 		{
 			JBUI.getMaudeThinker().mNextNPAModuleTextInput = npaModuleTextInput;
+
+			// Make the user likely locate the missing Maude executable more easily
+			if (mLastMaudeBinDir == null)
+			{
+				mLastMaudeBinDir = mLastNPAModuleDir;
+			}
 		}
 	}
 
@@ -107,8 +139,9 @@ public class GeneralPathsController extends PathsSetupController
 
 	public void notifyJSONModuleLoad(String jsonModuleTextInput)
 	{
-		if (handleModuleLoadOk())
+		if (mDialogPane.isVisible())
 		{
+			handleModuleLoadWhileVisible();
 			JBUI.getMaudeThinker().mJSONModuleTextInput = jsonModuleTextInput;
 		}
 	}
@@ -116,11 +149,12 @@ public class GeneralPathsController extends PathsSetupController
 	@FXML
 	private void onMaudeBinPathSearchBtnClick(ActionEvent event)
 	{
-		mMaudeBinFile = showPathDialog(mMaudeBinPath, null, mLastMaudeBinDir);
-		mLastMaudeBinDir = JBUI.handlePathDialogResult(mMaudeBinPath, mMaudeBinFile, mLastMaudeBinDir);
+		File maudeBinFile = showPathDialog(mMaudeBinPath, null, mLastMaudeBinDir);
 
-		if (mMaudeBinFile != null)
+		if (maudeBinFile != null)
 		{
+			mLastMaudeBinDir = handlePathDialogResult(mMaudeBinPath, maudeBinFile, mLastMaudeBinDir);
+			mMaudeBinFile = maudeBinFile;
 			handleMaudeBinPathChange(mMaudeBinFile.getAbsolutePath(), mMaudeBinFile);
 		}
 	}
@@ -128,11 +162,12 @@ public class GeneralPathsController extends PathsSetupController
 	@FXML
 	private void onNPAModulePathSearchBtnClick(ActionEvent event)
 	{
-		mNPAModuleFile = showMaudePathDialog(mNPAModulePath, mLastNPAModuleDir);
-		mLastNPAModuleDir = JBUI.handlePathDialogResult(mNPAModulePath, mNPAModuleFile, mLastNPAModuleDir);
+		File npaModuleFile = showMaudePathDialog(mNPAModulePath, mLastNPAModuleDir);
 
-		if (mNPAModuleFile != null)
+		if (npaModuleFile != null)
 		{
+			mLastNPAModuleDir = handlePathDialogResult(mNPAModulePath, npaModuleFile, mLastNPAModuleDir);
+			mNPAModuleFile = npaModuleFile;
 			handleNPAModulePathChange();
 		}
 	}

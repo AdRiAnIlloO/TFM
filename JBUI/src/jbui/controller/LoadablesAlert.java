@@ -9,11 +9,11 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import jbui.JBUI;
 
-class PathsSetupAlert<T extends PathsSetupController> extends Alert
+class LoadablesAlert<T extends LoadablesController> extends Alert
 {
 	private T mController;
 
-	PathsSetupAlert(String title, String headerText, String contentFXMLPathName)
+	LoadablesAlert(String title, String headerText, String contentFXMLPathName)
 	{
 		super(AlertType.CONFIRMATION);
 		setTitle(title);

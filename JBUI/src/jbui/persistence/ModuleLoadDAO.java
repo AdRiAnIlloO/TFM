@@ -7,9 +7,9 @@ import java.io.InputStream;
 import java.util.Scanner;
 
 import jbui.JBUI;
-import jbui.controller.PathsSetupController;
+import jbui.controller.LoadablesController;
 
-abstract class ModuleLoadDAO<T extends PathsSetupController> extends ResultsHandlingDAO
+abstract class ModuleLoadDAO<T extends LoadablesController> extends ResultsHandlingDAO
 {
 	T mController;
 	private InputStream mModuleInputStream;
@@ -43,5 +43,10 @@ abstract class ModuleLoadDAO<T extends PathsSetupController> extends ResultsHand
 			for (scanner.useDelimiter("\\z"), mModuleTextInput = ""; scanner
 					.hasNext(); mModuleTextInput += scanner.next().replace("%", "%%"));
 		}
+	}
+
+	boolean shouldReplaceThisInList(ModuleLoadDAO<T> other)
+	{
+		return (other.mController == mController);
 	}
 }

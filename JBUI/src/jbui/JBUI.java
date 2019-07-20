@@ -8,7 +8,6 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
@@ -42,24 +41,6 @@ public class JBUI extends Application
 	public static URL getResource(String name)
 	{
 		return JBUI.class.getResource(name);
-	}
-
-	/**
-	 * @param textField
-	 * @param updatedFile
-	 * @param lastConfirmedDirectory
-	 * @return If final updatedFiles valid, its parent directory. Otherwise,
-	 *         lastConfirmedDirectory
-	 */
-	public static File handlePathDialogResult(TextField textField, File updatedFile, File lastConfirmedDirectory)
-	{
-		if (updatedFile != null)
-		{
-			textField.setText(updatedFile.getAbsolutePath());
-			lastConfirmedDirectory = updatedFile.getParentFile();
-		}
-
-		return lastConfirmedDirectory;
 	}
 
 	public static void main(String[] args)

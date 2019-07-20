@@ -1,6 +1,6 @@
 package jbui.controller;
 
-class GeneralPathsAlert extends PathsSetupAlert<GeneralPathsController>
+class GeneralPathsAlert extends LoadablesAlert<GeneralPathsController>
 {
 	GeneralPathsAlert()
 	{

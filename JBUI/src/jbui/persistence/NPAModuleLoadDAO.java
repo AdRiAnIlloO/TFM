@@ -20,6 +20,11 @@ public class NPAModuleLoadDAO extends ModuleLoadDAO<GeneralPathsController>
 	@Override
 	boolean shouldReplaceThisInList(DAO other)
 	{
-		return (other instanceof NPAModuleLoadDAO);
+		if (other instanceof NPAModuleLoadDAO)
+		{
+			return shouldReplaceThisInList((NPAModuleLoadDAO) other);
+		}
+
+		return false;
 	}
 }
