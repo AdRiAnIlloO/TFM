@@ -64,14 +64,14 @@ class IdSystemNode
 		return leafNodeAmount;
 	}
 
-	void drawArcs(IdSystemNode parent, GraphicsContext ctx)
+	void drawArcs(GraphicsContext ctx)
 	{
 		ctx.setLineWidth(PARENT_TO_CHILD_ARC_WIDTH);
 
 		for (IdSystemNode child : mChildren)
 		{
 			mController.drawArcToChild(child.mController, ctx);
-			child.drawArcs(this, ctx);
+			child.drawArcs(ctx);
 		}
 	}
 

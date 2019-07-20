@@ -118,7 +118,7 @@ public class MaudeThinker extends AnimationTimer
 		{
 			GraphicsContext ctx = JBUI.getDrawingCanvas().getGraphicsContext2D();
 			ctx.clearRect(0, 0, ctx.getCanvas().getWidth(), ctx.getCanvas().getHeight());
-			mRootIdSystemNode.drawArcs(mRootIdSystemNode, JBUI.getDrawingCanvas().getGraphicsContext2D());
+			mRootIdSystemNode.drawArcs(JBUI.getDrawingCanvas().getGraphicsContext2D());
 			mState = State.Processing;
 			break;
 		}
