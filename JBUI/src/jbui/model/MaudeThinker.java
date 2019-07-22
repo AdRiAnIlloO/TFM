@@ -8,10 +8,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import java.util.LinkedList;
+import java.util.Queue;
 
 import javafx.animation.AnimationTimer;
 import javafx.scene.canvas.GraphicsContext;
@@ -22,9 +20,17 @@ public class MaudeThinker extends AnimationTimer
 {
 	private enum State
 	{
-		Initial, Processing, RefreshingCanvas
+		Initial, Processing,
+
+		// This is separated from RefreshingGridPane to ensure that nodes are painted
+		// properly by the state's enter tick, so only then arcs will be painted fine
+		RefreshingCanvas,
+
+		// This is separated from Processing to ensure refreshing is not repeated
+		RefreshingGridPane
 	}
 
+	private int mAttackStateId;
 	private BufferedReader mBufferedReader;
 	private BufferedWriter mBufferedWriter;
 
@@ -38,6 +44,8 @@ public class MaudeThinker extends AnimationTimer
 
 	public DAOThread mDAOThread;
 	public String mJSONModuleTextInput;
+	public Queue<MaudeCommand> mMaudeInCommands;
+	private AnswerableMaudeCommand mMaudeOutCommand;
 
 	// To be used if user selected a new process, and confirms general paths
 	// alert when no protocol is launched yet or a new protocol launches
@@ -47,42 +55,23 @@ public class MaudeThinker extends AnimationTimer
 	// alert when no protocol is launched yet or a new protocol launches
 	public String mNextNPAModuleTextInput;
 
-	private IdSystemNode mRootIdSystemNode;
+	IdSystemNode mRootIdSystemNode;
 	private State mState;
 
 	public MaudeThinker()
 	{
 		mState = State.Initial;
+		mMaudeInCommands = new LinkedList<>();
 		mDAOThread = new DAOThread();
 		Thread thread = new Thread(mDAOThread);
 		thread.setDaemon(true);
 		thread.start();
 	}
 
-	private void checkForMaudeIdSystemAnswer(String line) throws IOException, JSONException
+	private void clearCanvas()
 	{
-		System.out.println(line);
-		String prefix = "result String: ";
-
-		if (line.startsWith(prefix))
-		{
-			// Get raw message and unescape trailing/ending/data quotes for valid JSON input
-			String jsonText = line.substring(prefix.length());
-			jsonText = jsonText.replaceAll("^\"|\"$", "").replace("\\", "");
-
-			JSONArray jsonIdSystemArray = new JSONArray(jsonText);
-
-			for (int i = 0; i < jsonIdSystemArray.length(); i++)
-			{
-				JSONObject jsonIdSystem = jsonIdSystemArray.getJSONObject(i);
-				String idText = jsonIdSystem.getString("id");
-				String msg = jsonIdSystem.getString("msg");
-				IdSystemNode child = new IdSystemNode(idText, msg);
-				mRootIdSystemNode.insert(child);
-			}
-
-			mRootIdSystemNode.addToGridPane(0, 0, null);
-		}
+		GraphicsContext ctx = JBUI.getDrawingCanvas().getGraphicsContext2D();
+		ctx.clearRect(0, 0, ctx.getCanvas().getWidth(), ctx.getCanvas().getHeight());
 	}
 
 	@Override
@@ -98,30 +87,70 @@ public class MaudeThinker extends AnimationTimer
 		}
 		case Processing:
 		{
-			try
+			// Process pending Maude commands.
+			// For security, we won't process a command until we fully process current.
+			for (;;)
 			{
-				for (; mBufferedReader.ready(); checkForMaudeIdSystemAnswer(mBufferedReader.readLine()));
-			}
-			catch (Exception e)
-			{
-				e.printStackTrace();
+				// Check cached pending command response
+				if (mMaudeOutCommand != null)
+				{
+					if (!mMaudeOutCommand.checkAnswer(mBufferedReader))
+					{
+						// Since computations can take long we stop listening until next tick
+						break;
+					}
+
+					mMaudeOutCommand = null;
+				}
+
+				// Check pending commands to send
+				if (mMaudeInCommands.isEmpty())
+				{
+					break;
+				}
+
+				try
+				{
+					mMaudeInCommands.peek().send(mBufferedWriter);
+					mMaudeOutCommand = mMaudeInCommands.remove().toAnswerable();
+				}
+				catch (IOException e)
+				{
+					e.printStackTrace();
+				}
 			}
 
-			if (mRootIdSystemNode != null)
-			{
-				mState = State.RefreshingCanvas;
-			}
-
+			break;
+		}
+		case RefreshingGridPane:
+		{
+			mRootIdSystemNode.addToGridPane(0, 0, null);
+			mState = State.RefreshingCanvas;
 			break;
 		}
 		case RefreshingCanvas:
 		{
-			GraphicsContext ctx = JBUI.getDrawingCanvas().getGraphicsContext2D();
-			ctx.clearRect(0, 0, ctx.getCanvas().getWidth(), ctx.getCanvas().getHeight());
+			clearCanvas();
 			mRootIdSystemNode.drawArcs(JBUI.getDrawingCanvas().getGraphicsContext2D());
 			mState = State.Processing;
 			break;
 		}
+		}
+	}
+
+	void onIdSystemNodesAdded()
+	{
+		mState = State.RefreshingGridPane;
+	}
+
+	public void setInitialProtocolInfo(int attackStateId, int depth)
+	{
+		mAttackStateId = attackStateId;
+
+		for (int i = 0; i <= depth; i++)
+		{
+			MaudeCommand command = new JSONRunCommand(attackStateId, i);
+			mMaudeInCommands.add(command);
 		}
 	}
 
@@ -135,16 +164,6 @@ public class MaudeThinker extends AnimationTimer
 		mNextMaudeProcess = maudeProcess;
 	}
 
-	private void talkToMaude(String command, Object... args) throws Exception
-	{
-		tryPrintMaudeAnswer();
-		command = String.format(command, args);
-		mBufferedWriter.write(command);
-		mBufferedWriter.newLine();
-		mBufferedWriter.flush();
-		tryPrintMaudeAnswer();
-	}
-
 	public boolean tryLaunchProtocolNow(File maudeBinFile, String protocolModuleTextInput)
 	{
 		try
@@ -152,18 +171,19 @@ public class MaudeThinker extends AnimationTimer
 			if (mRootIdSystemNode != null)
 			{
 				mRootIdSystemNode.removeChildrenFromModelAndGridPane();
+				clearCanvas();
 			}
 			else
 			{
 				// We show the initial node, which is not an attack state.
 				// Maude-NPA shares this idea, such that no returned state can be the root.
 				mRootIdSystemNode = new IdSystemNode("1", "");
+				mRootIdSystemNode.addToGridPane(0, 0, null);
 			}
 
 			updateMainComponents();
-			talkToMaude(protocolModuleTextInput);
-			talkToMaude("red in MAUDE-NPA-JSON : runJSON(0, 1) .");
-			talkToMaude("red in MAUDE-NPA-JSON : runJSON(0, 2) .");
+			MaudeCommand command = new MaudeCommand(protocolModuleTextInput);
+			mMaudeInCommands.add(command);
 			mState = State.Processing;
 			return true;
 		}
@@ -172,14 +192,6 @@ public class MaudeThinker extends AnimationTimer
 			e.printStackTrace();
 			mState = State.Initial;
 			return false;
-		}
-	}
-
-	private void tryPrintMaudeAnswer() throws Exception
-	{
-		while (mBufferedReader.ready())
-		{
-			System.out.println(mBufferedReader.readLine());
 		}
 	}
 
@@ -220,20 +232,20 @@ public class MaudeThinker extends AnimationTimer
 			OutputStreamWriter outputWriter = new OutputStreamWriter(outputStream);
 			mBufferedWriter = new BufferedWriter(outputWriter);
 
-			// Load Maude Modules on subprocess/Shell
+			// Request loading Maude Modules on subprocess/Shell, if suitable
 			if (mNextNPAModuleTextInput != null)
 			{
-				talkToMaude(mNextNPAModuleTextInput);
 				mCurNPAModuleTextInput = mNextNPAModuleTextInput;
 				mNextNPAModuleTextInput = null;
 			}
-			else if (mCurNPAModuleTextInput != null)
+
+			if (mCurNPAModuleTextInput != null)
 			{
-				talkToMaude(mCurNPAModuleTextInput);
-
+				MaudeCommand command = new MaudeCommand(mCurNPAModuleTextInput);
+				mMaudeInCommands.add(command);
+				command = new MaudeCommand(mJSONModuleTextInput);
+				mMaudeInCommands.add(command);
 			}
-
-			talkToMaude(mJSONModuleTextInput);
 		}
 		else if (mNextNPAModuleTextInput != null)
 		{

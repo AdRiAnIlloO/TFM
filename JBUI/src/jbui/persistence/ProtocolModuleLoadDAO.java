@@ -2,11 +2,11 @@ package jbui.persistence;
 
 import java.io.File;
 
-import jbui.controller.ProtocolSetupController;
+import jbui.controller.ProtocolPathController;
 
-public class ProtocolModuleLoadDAO extends ModuleLoadDAO<ProtocolSetupController>
+public class ProtocolModuleLoadDAO extends ModuleLoadDAO<ProtocolPathController>
 {
-	public ProtocolModuleLoadDAO(ProtocolSetupController controller, File npaModuleFile)
+	public ProtocolModuleLoadDAO(ProtocolPathController controller, File npaModuleFile)
 	{
 		super(controller, npaModuleFile);
 	}

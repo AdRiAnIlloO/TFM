@@ -39,4 +39,14 @@ mod MAUDE-NPA-JSON is
 	--- A simple convenience wrapper to toJSON
 	op runJSON : Nat Bound -> String .
 	eq runJSON(N, B) = toJSON(debug(N, B)) .
+	
+	op countAttackStatesFrom : Nat -> Nat .
+	eq countAttackStatesFrom(N) =
+		if extractAttack(N) :: Attack
+		then 1 + countAttackStatesFrom(N + 1)
+		else 0
+		fi .
+	
+	op countAttackStates : -> Nat .
+	eq countAttackStates = countAttackStatesFrom(0) .
 endm
