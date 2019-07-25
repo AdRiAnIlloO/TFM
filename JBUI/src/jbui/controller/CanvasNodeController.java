@@ -42,10 +42,11 @@ public class CanvasNodeController
 
 	public void drawArcToChild(CanvasNodeController child, GraphicsContext ctx)
 	{
+		double canvasOffsetX = ctx.getCanvas().getLocalToSceneTransform().getTx();
 		double canvasOffsetY = ctx.getCanvas().getLocalToSceneTransform().getTy();
-		double x0 = mEllipse.getLocalToSceneTransform().getTx();
+		double x0 = mEllipse.getLocalToSceneTransform().getTx() - canvasOffsetX;
 		double y0 = mEllipse.getLocalToSceneTransform().getTy() - canvasOffsetY;
-		double x1 = child.mEllipse.getLocalToSceneTransform().getTx();
+		double x1 = child.mEllipse.getLocalToSceneTransform().getTx() - canvasOffsetX;
 		double y1 = child.mEllipse.getLocalToSceneTransform().getTy() - child.mEllipse.getRadiusY() - canvasOffsetY;
 		ctx.strokeLine(x0, y0, x1, y1);
 	}
@@ -58,7 +59,7 @@ public class CanvasNodeController
 	@FXML
 	private void initialize()
 	{
-		mIdLabel.widthProperty().addListener((property, oldWidth, newWidth) ->
+		mIdLabel.widthProperty().addListener((observable, oldWidth, newWidth) ->
 		{
 			// Ideally, the width of the id label should only grow - FXML placeholder is "1"
 			double radius = Math.max(newWidth.doubleValue() / 2, mEllipse.getRadiusX());

@@ -22,8 +22,7 @@
 	<rowConstraints>
 		<RowConstraints prefHeight="40.0" vgrow="SOMETIMES" />
 		<RowConstraints prefHeight="40.0" vgrow="SOMETIMES" />
-		<RowConstraints minHeight="10.0" prefHeight="40.0"
-			vgrow="SOMETIMES" />
+		<RowConstraints vgrow="SOMETIMES" />
 	</rowConstraints>
 	<children>
 		<Label text="Attack state:" GridPane.halignment="RIGHT">

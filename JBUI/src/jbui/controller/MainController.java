@@ -8,14 +8,13 @@ import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
 import jbui.JBUI;
 
 public class MainController
 {
 	@FXML
 	// Fixes auto resizing & positioning of the Canvas upon window changes
-	private Pane mCanvasFixesPane;
+	private Pane mCanvasPane;
 
 	@FXML
 	public Canvas mDrawingCanvas;
@@ -24,13 +23,11 @@ public class MainController
 	public GridPane mNodesGridPane;
 
 	@FXML
-	private StackPane mTest;
-
-	@FXML
 	private void initialize()
 	{
 		JBUI.sInstance.mMainController = this;
-		mDrawingCanvas.widthProperty().bind(mCanvasFixesPane.widthProperty());
+		mDrawingCanvas.widthProperty().bind(mCanvasPane.widthProperty());
+		mDrawingCanvas.heightProperty().bind(mCanvasPane.heightProperty());
 
 		// Prompt earlier the general paths controller setup window, for convenience
 		showConfirmationAlert(GeneralPathsAlert.class);
