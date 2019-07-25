@@ -130,14 +130,19 @@ class IdSystemNode
 		return false;
 	}
 
-	void removeChildrenFromModelAndGridPane()
+	boolean isRoot()
+	{
+		return (mIdPositions.size() == 1);
+	}
+
+	void removeFromModelAndGridPane()
 	{
 		for (IdSystemNode child : mChildren)
 		{
-			child.mController.hideFromGridPane();
-			child.removeChildrenFromModelAndGridPane();
+			child.removeFromModelAndGridPane();
 		}
 
+		mController.hideFromGridPane();
 		mChildren.clear();
 	}
 }

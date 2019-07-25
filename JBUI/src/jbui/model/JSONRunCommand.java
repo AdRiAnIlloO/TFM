@@ -32,8 +32,15 @@ class JSONRunCommand extends AnswerableMaudeCommand
 					JSONObject jsonIdSystem = jsonIdSystemArray.getJSONObject(i);
 					String idText = jsonIdSystem.getString("id");
 					String msg = jsonIdSystem.getString("msg");
-					IdSystemNode child = new IdSystemNode(idText, msg);
-					JBUI.getMaudeThinker().mRootIdSystemNode.insert(child);
+					IdSystemNode node = new IdSystemNode(idText, msg);
+
+					if (node.isRoot())
+					{
+						JBUI.getMaudeThinker().mRootIdSystemNode = node;
+						continue;
+					}
+
+					JBUI.getMaudeThinker().mRootIdSystemNode.insert(node);
 				}
 
 				JBUI.getMaudeThinker().onIdSystemNodesAdded();

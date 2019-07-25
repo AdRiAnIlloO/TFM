@@ -170,15 +170,9 @@ public class MaudeThinker extends AnimationTimer
 		{
 			if (mRootIdSystemNode != null)
 			{
-				mRootIdSystemNode.removeChildrenFromModelAndGridPane();
+				mRootIdSystemNode.removeFromModelAndGridPane();
+				mRootIdSystemNode = null;
 				clearCanvas();
-			}
-			else
-			{
-				// We show the initial node, which is not an attack state.
-				// Maude-NPA shares this idea, such that no returned state can be the root.
-				mRootIdSystemNode = new IdSystemNode("1", "");
-				mRootIdSystemNode.addToGridPane(0, 0, null);
 			}
 
 			updateMainComponents();
