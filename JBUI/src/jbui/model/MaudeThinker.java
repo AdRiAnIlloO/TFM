@@ -175,6 +175,15 @@ public class MaudeThinker extends AnimationTimer
 				clearCanvas();
 			}
 
+			// Try mark answerable command as aborted
+			if (mMaudeOutCommand != null)
+			{
+				mMaudeOutCommand.abortOnProtocolLaunch();
+			}
+
+			// Remove no longer desired commands
+			mMaudeInCommands.removeIf(command -> command.mustVanishOnProtocolLaunch());
+
 			updateMainComponents();
 			MaudeCommand command = new MaudeCommand(protocolModuleTextInput);
 			mMaudeInCommands.add(command);

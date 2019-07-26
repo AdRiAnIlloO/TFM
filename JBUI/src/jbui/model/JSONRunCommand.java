@@ -13,11 +13,21 @@ class JSONRunCommand extends AnswerableMaudeCommand
 	}
 
 	@Override
+	void abortOnProtocolLaunch()
+	{
+		mIsAborted = true;
+	}
+
+	@Override
 	boolean checkAnswer(String line)
 	{
 		String prefix = "result String: ";
 
-		if (line.startsWith(prefix))
+		if (!line.startsWith(prefix))
+		{
+			return false;
+		}
+		else if (!mIsAborted)
 		{
 			// Get raw message and unescape trailing/ending/data quotes for valid JSON input
 			String jsonText = line.substring(prefix.length());
@@ -49,10 +59,14 @@ class JSONRunCommand extends AnswerableMaudeCommand
 			{
 				e.printStackTrace();
 			}
-
-			return true;
 		}
 
-		return false;
+		return true;
+	}
+
+	@Override
+	boolean mustVanishOnProtocolLaunch()
+	{
+		return true;
 	}
 }
