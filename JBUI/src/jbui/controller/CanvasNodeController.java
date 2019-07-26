@@ -1,12 +1,21 @@
 package jbui.controller;
 
+import java.util.Optional;
+
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.TextInputDialog;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Ellipse;
 import jbui.JBUI;
+import jbui.model.IdSystemNode;
 
 public class CanvasNodeController
 {
@@ -14,7 +23,9 @@ public class CanvasNodeController
 	private Ellipse mEllipse;
 
 	@FXML
-	public Label mIdLabel;
+	private Label mIdLabel;
+
+	private IdSystemNode mModelNode;
 
 	@FXML
 	private StackPane mWrappingStackPane;
@@ -38,6 +49,21 @@ public class CanvasNodeController
 		}
 
 		nodesGridPane.add(mWrappingStackPane, columnIndex, rowIndex, columnSpan, 1);
+	}
+
+	private void createAndShowContextMenu(MouseEvent event)
+	{
+		MenuItem singleDepthSearchItem = new MenuItem("Search from this node (single step)");
+		MenuItem inputDepthSearchItem = new MenuItem("Search from this node...");
+
+		singleDepthSearchItem.setOnAction(actionEvent ->
+		{
+			performGuidedSearch(1);
+		});
+
+		inputDepthSearchItem.setOnAction(this::promptSearchDepthDialog);
+		ContextMenu contextMenu = new ContextMenu(singleDepthSearchItem, inputDepthSearchItem);
+		contextMenu.show(mEllipse.getScene().getWindow(), event.getScreenX(), event.getScreenY());
 	}
 
 	public void drawArcToChild(CanvasNodeController child, GraphicsContext ctx)
@@ -68,7 +94,54 @@ public class CanvasNodeController
 
 		mEllipse.setOnMousePressed(event ->
 		{
-			// TODO: Mark active node selection?
+			switch (event.getButton())
+			{
+			case SECONDARY:
+			{
+				createAndShowContextMenu(event);
+			}
+			default:
+			{
+				JBUI.getMainController().selectNodeController(this);
+			}
+			}
 		});
+	}
+
+	void performGuidedSearch(int depth)
+	{
+		JBUI.getMaudeThinker().performGuidedSearch(depth, mModelNode);
+	}
+
+	void promptSearchDepthDialog(ActionEvent event)
+	{
+		TextInputDialog dialog = new TextInputDialog("0");
+		dialog.setHeaderText("Choose the search depth");
+		Validation.makeNumeric(dialog.getEditor());
+		Optional<String> result = dialog.showAndWait();
+
+		result.ifPresent(inputText ->
+		{
+			if (!inputText.isEmpty())
+			{
+				performGuidedSearch(Integer.parseInt(inputText));
+			}
+		});
+	}
+
+	void select()
+	{
+		mEllipse.setFill(Color.BLUE);
+	}
+	
+	public void setModelData(String idText, IdSystemNode modelNode)
+	{
+		mIdLabel.setText(idText);
+		mModelNode = modelNode;
+	}
+
+	void unselect()
+	{
+		mEllipse.setFill(Color.CORNFLOWERBLUE);
 	}
 }

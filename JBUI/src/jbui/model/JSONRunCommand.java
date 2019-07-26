@@ -9,7 +9,12 @@ class JSONRunCommand extends AnswerableMaudeCommand
 {
 	JSONRunCommand(int attackId, int depth)
 	{
-		super("red in MAUDE-NPA-JSON : runJSON(%d, %d) .", attackId, depth);
+		this(attackId, depth, "1");
+	}
+
+	JSONRunCommand(int attackId, int depth, String startIdText)
+	{
+		super("red in MAUDE-NPA-JSON : runJSON[%s](%d, %d) .", startIdText, attackId, depth);
 	}
 
 	@Override
@@ -47,10 +52,11 @@ class JSONRunCommand extends AnswerableMaudeCommand
 					if (node.isRoot())
 					{
 						JBUI.getMaudeThinker().mRootIdSystemNode = node;
+						node.initController(idText);
 						continue;
 					}
 
-					JBUI.getMaudeThinker().mRootIdSystemNode.insert(node);
+					JBUI.getMaudeThinker().mRootIdSystemNode.insert(node, idText);
 				}
 
 				JBUI.getMaudeThinker().onIdSystemNodesAdded();

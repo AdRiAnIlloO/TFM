@@ -22,6 +22,11 @@ public class JBUI extends Application
 	{
 		return sInstance.mMainController.mDrawingCanvas;
 	}
+	
+	public static MainController getMainController()
+	{
+		return sInstance.mMainController;
+	}
 
 	public static File getMaudeBinFile()
 	{
@@ -49,15 +54,10 @@ public class JBUI extends Application
 	}
 
 	public MainController mMainController;
-
 	public File mMaudeBinFile; // Maude bin
-
 	private MaudeThinker mMaudeThinker;
-
 	public File mNPAModuleFile;
-
 	public File mProtocolModuleFile;
-
 	public Stage mStage;
 
 	public JBUI() throws IOException

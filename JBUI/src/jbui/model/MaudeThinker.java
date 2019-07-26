@@ -143,6 +143,16 @@ public class MaudeThinker extends AnimationTimer
 		mState = State.RefreshingGridPane;
 	}
 
+	public void performGuidedSearch(int depth, IdSystemNode node)
+	{
+		for (int auxDepth = 1; auxDepth <= depth; auxDepth++)
+		{
+			MaudeCommand command = new JSONRunCommand(mAttackStateId, node.getDepth() + auxDepth,
+					node.unparseIdToNPAFormat());
+			mMaudeInCommands.add(command);
+		}
+	}
+
 	public void setInitialProtocolInfo(int attackStateId, int depth)
 	{
 		mAttackStateId = attackStateId;

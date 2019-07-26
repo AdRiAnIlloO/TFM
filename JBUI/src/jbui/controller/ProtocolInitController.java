@@ -70,22 +70,7 @@ public class ProtocolInitController extends LoadablesController
 	@Override
 	void postInitialize()
 	{
-		// Add numeric depth input validation
-		mDepth.textProperty().addListener((observable, oldText, newText) ->
-		{
-			try
-			{
-				if (!newText.isEmpty() && Integer.parseInt(newText) < 0)
-				{
-					mDepth.setText(oldText);
-				}
-			}
-			catch (NumberFormatException e)
-			{
-				mDepth.setText(oldText);
-			}
-		});
-
+		Validation.makeNumeric(mDepth);
 		handleModulePathChange(mAttackStateIdsStatus);
 		mAttackStateIds.getItems().add(0);
 		mAttackStateIds.getSelectionModel().select(0);

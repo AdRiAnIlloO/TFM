@@ -28,17 +28,21 @@ mod MAUDE-NPA-JSON is
 
 	--- Given an IdSystemSet, returns a JSON representation, surrounding each Id with escaped quotes
 	op unparseISS : IdSystemSet -> String .
-	eq unparseISS((< I > (S)) empty) = "{ \"id\": \"" + unparseId(I) + "\", \"msg\": \"" + toJSON(S) + "\" }" .
-	eq unparseISS((IS) ISS) = unparseISS((IS) empty) + ", " + unparseISS(ISS) [owise] .
+	eq unparseISS(empty) = "" .
+	eq unparseISS((< I > (S))) = "{ \"id\": \"" + unparseId(I) + "\", \"msg\": \"" + toJSON(S) + "\" }" .
+	eq unparseISS((IS) ISS) = unparseISS((IS)) + ", " + unparseISS(ISS) [owise] .
 
 	--- Given a high-level protocol computation  result, returns a JSON representation
 	op toJSON : IdSystemSet-or-Error -> String .
 	eq toJSON(ISS) = "[" + unparseISS(ISS) + "]" .
 	eq toJSON(ISSoE) = "[]" [owise] .
+	
+	op runJSON[_]`(_`, _`) : Id-SMsgList Nat Bound -> String .
+	eq runJSON[I:Id-SMsgList](N, B) = toJSON(debug[I:Id-SMsgList](N, B)) .
 
 	--- A simple convenience wrapper to toJSON
 	op runJSON : Nat Bound -> String .
-	eq runJSON(N, B) = toJSON(debug(N, B)) .
+	eq runJSON(N, B) = runJSON[1](N, B) .
 	
 	op countAttackStatesFrom : Nat -> Nat .
 	eq countAttackStatesFrom(N) =

@@ -12,7 +12,7 @@
 	xmlns:fx="http://javafx.com/fxml/1"
 	fx:controller="jbui.controller.CanvasNodeController">
 	<children>
-		<Ellipse fx:id="mEllipse" fill="DODGERBLUE" radiusX="20.0"
+		<Ellipse fx:id="mEllipse" fill="CORNFLOWERBLUE" radiusX="20.0"
 			radiusY="20.0" stroke="BLACK" strokeLineCap="ROUND"
 			strokeLineJoin="ROUND">
 			<cursor>
@@ -20,8 +20,8 @@
 			</cursor>
 		</Ellipse>
 		<Label fx:id="mIdLabel" alignment="CENTER"
-			contentDisplay="CENTER" text="1" textAlignment="CENTER"
-			textFill="WHITE">
+			contentDisplay="CENTER" mouseTransparent="true" text="1"
+			textAlignment="CENTER" textFill="WHITE">
 			<font>
 				<Font size="14.0" />
 			</font>

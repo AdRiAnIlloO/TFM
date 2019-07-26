@@ -10,9 +10,12 @@ import javafx.scene.canvas.GraphicsContext;
 import jbui.JBUI;
 import jbui.controller.CanvasNodeController;
 
-class IdSystemNode
+public class IdSystemNode
 {
-	static private int PARENT_TO_CHILD_ARC_WIDTH = 2;
+	private static int PARENT_TO_CHILD_ARC_WIDTH = 2;
+
+	// Used to advance from the last global tree depth
+	static int sMaxTreeDepth;
 
 	private List<IdSystemNode> mChildren;
 	private CanvasNodeController mController;
@@ -23,13 +26,8 @@ class IdSystemNode
 
 	private String mMsg;
 
-	IdSystemNode(String idText, String msg) throws IOException
+	IdSystemNode(String idText, String msg)
 	{
-		URL url = JBUI.getResource("view/canvas_node.fxml");
-		FXMLLoader loader = new FXMLLoader(url);
-		loader.load();
-		mController = loader.getController();
-		mController.mIdLabel.setText(idText);
 		mMsg = msg;
 		mChildren = new ArrayList<>();
 		mIdPositions = new ArrayList<>();
@@ -39,6 +37,7 @@ class IdSystemNode
 		{
 			Integer idPosition = Integer.parseInt(idText);
 			mIdPositions.add(idPosition);
+			return;
 		}
 
 		for (String idTextPosition : idTextPositions)
@@ -46,6 +45,8 @@ class IdSystemNode
 			Integer idPosition = Integer.parseInt(idTextPosition);
 			mIdPositions.add(idPosition);
 		}
+
+		sMaxTreeDepth = Math.max(sMaxTreeDepth, idTextPositions.length);
 	}
 
 	int addToGridPane(int columnIndex, int rowIndex, CanvasNodeController parentController)
@@ -81,14 +82,42 @@ class IdSystemNode
 		if (other instanceof IdSystemNode)
 		{
 			IdSystemNode otherNode = (IdSystemNode) other;
-			String otherNodeIdText = otherNode.mController.mIdLabel.getText();
-			return (mController.mIdLabel.getText().equals(otherNodeIdText));
+			return (otherNode.mIdPositions.equals(mIdPositions));
 		}
 
 		return false;
 	}
 
-	boolean insert(IdSystemNode otherChild)
+	int getDepth()
+	{
+		return (mIdPositions.size() - 1);
+	}
+
+	/**
+	 * Initializes the required FXML controller
+	 * 
+	 * It is decoupled from the constructor to easily avoid wasting memory on
+	 * instantiated nodes which may be duplicated during the interactive search
+	 * 
+	 * @param idText
+	 */
+	void initController(String idText)
+	{
+		try
+		{
+			URL url = JBUI.getResource("view/canvas_node.fxml");
+			FXMLLoader loader = new FXMLLoader(url);
+			loader.load();
+			mController = loader.getController();
+			mController.setModelData(idText, this);
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	boolean insert(IdSystemNode otherChild, String idText)
 	{
 		// Search first mismatching breadth position among the max common depth level
 		for (int i = 0, maxDepth = Math.min(mIdPositions.size(), otherChild.mIdPositions.size()); i < maxDepth; i++)
@@ -107,11 +136,14 @@ class IdSystemNode
 
 			if (index != -1)
 			{
-				mChildren.set(index, otherChild);
+				// Update only the message, just in case.
+				// Every other data from current node already invalidates child's.
+				mChildren.get(index).mMsg = otherChild.mMsg;
 			}
 			else
 			{
 				mChildren.add(otherChild);
+				otherChild.initController(idText);
 			}
 
 			return true;
@@ -121,7 +153,7 @@ class IdSystemNode
 		// Delegate insertion to my direct children.
 		for (IdSystemNode myChild : mChildren)
 		{
-			if (myChild.insert(otherChild))
+			if (myChild.insert(otherChild, idText))
 			{
 				return true;
 			}
@@ -144,5 +176,18 @@ class IdSystemNode
 
 		mController.hideFromGridPane();
 		mChildren.clear();
+	}
+
+	// Computes the default Maude-NPA textual id of this node, which has spaces
+	String unparseIdToNPAFormat()
+	{
+		String spacedIdText = String.valueOf(mIdPositions.get(0));
+
+		for (int i = 1; i < mIdPositions.size(); i++)
+		{
+			spacedIdText += " . " + String.valueOf(mIdPositions.get(i));
+		}
+
+		return spacedIdText;
 	}
 }
