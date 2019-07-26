@@ -5,7 +5,10 @@ import java.io.IOException;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Cursor;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import jbui.JBUI;
@@ -23,11 +26,20 @@ public class MainController
 	public GridPane mNodesGridPane;
 
 	@FXML
+	private ScrollPane mScrollPane;
+
+	@FXML
 	private void initialize()
 	{
 		JBUI.sInstance.mMainController = this;
 		mDrawingCanvas.widthProperty().bind(mCanvasPane.widthProperty());
 		mDrawingCanvas.heightProperty().bind(mCanvasPane.heightProperty());
+
+		// Pick a better cursor for panning
+		mScrollPane.addEventHandler(MouseEvent.DRAG_DETECTED, event ->
+		{
+			mScrollPane.setCursor(Cursor.CLOSED_HAND);
+		});
 
 		// Prompt earlier the general paths controller setup window, for convenience
 		showConfirmationAlert(GeneralPathsAlert.class);

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.Cursor?>
 <?import javafx.scene.canvas.Canvas?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ButtonBar?>
@@ -64,8 +65,9 @@
 						</Button>
 					</buttons>
 				</ButtonBar>
-				<ScrollPane fitToHeight="true" fitToWidth="true"
-					prefHeight="350.0" VBox.vgrow="ALWAYS">
+				<ScrollPane fx:id="mScrollPane" fitToHeight="true"
+					fitToWidth="true" pannable="true" prefHeight="350.0"
+					VBox.vgrow="ALWAYS">
 					<content>
 						<HBox alignment="TOP_CENTER">
 							<children>
@@ -91,6 +93,9 @@
 							</children>
 						</HBox>
 					</content>
+					<cursor>
+						<Cursor fx:constant="OPEN_HAND" />
+					</cursor>
 				</ScrollPane>
 			</children>
 		</VBox>
