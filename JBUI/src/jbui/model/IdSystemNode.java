@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Queue;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.canvas.GraphicsContext;
@@ -19,34 +20,15 @@ public class IdSystemNode
 
 	private List<IdSystemNode> mChildren;
 	private CanvasNodeController mController;
-
-	// Parsed version of the academic, dot-based term position representation
-	// (e.g. 1.2.<...>.N)
-	private List<Integer> mIdPositions;
-
+	private IdElem mIdElem;
 	private String mMsg;
+	private IdSystemNode mParent;
 
-	IdSystemNode(String idText, String msg)
+	IdSystemNode(IdElem idElem, String msg)
 	{
 		mMsg = msg;
 		mChildren = new ArrayList<>();
-		mIdPositions = new ArrayList<>();
-		String[] idTextPositions = idText.split("\\.");
-
-		if (idTextPositions.length < 1)
-		{
-			Integer idPosition = Integer.parseInt(idText);
-			mIdPositions.add(idPosition);
-			return;
-		}
-
-		for (String idTextPosition : idTextPositions)
-		{
-			Integer idPosition = Integer.parseInt(idTextPosition);
-			mIdPositions.add(idPosition);
-		}
-
-		sMaxTreeDepth = Math.max(sMaxTreeDepth, idTextPositions.length);
+		mIdElem = idElem;
 	}
 
 	int addToGridPane(int columnIndex, int rowIndex, CanvasNodeController parentController)
@@ -76,13 +58,24 @@ public class IdSystemNode
 		}
 	}
 
-	@Override
-	public boolean equals(Object other)
+	private boolean equals(IdSystemNode node)
 	{
-		if (other instanceof IdSystemNode)
+		boolean localDataEqual = node.mIdElem.equals(mIdElem);
+
+		if (mParent != null)
 		{
-			IdSystemNode otherNode = (IdSystemNode) other;
-			return (otherNode.mIdPositions.equals(mIdPositions));
+			return (mParent.equals(node) && localDataEqual);
+		}
+
+		return localDataEqual;
+	}
+
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (obj instanceof IdSystemNode)
+		{
+			return equals((IdSystemNode) obj);
 		}
 
 		return false;
@@ -90,7 +83,12 @@ public class IdSystemNode
 
 	int getDepth()
 	{
-		return (mIdPositions.size() - 1);
+		if (mParent != null)
+		{
+			return mParent.getDepth() + 1;
+		}
+
+		return 0;
 	}
 
 	/**
@@ -101,7 +99,7 @@ public class IdSystemNode
 	 * 
 	 * @param idText
 	 */
-	void initController(String idText)
+	void initController()
 	{
 		try
 		{
@@ -109,7 +107,7 @@ public class IdSystemNode
 			FXMLLoader loader = new FXMLLoader(url);
 			loader.load();
 			mController = loader.getController();
-			mController.setModelData(idText, this);
+			mController.setModelData(this);
 		}
 		catch (IOException e)
 		{
@@ -117,21 +115,23 @@ public class IdSystemNode
 		}
 	}
 
-	boolean insert(IdSystemNode otherChild, String idText)
+	boolean insert(IdSystemNode otherChild, Queue<IdElem> idElems)
 	{
-		// Search first mismatching breadth position among the max common depth level
-		for (int i = 0, maxDepth = Math.min(mIdPositions.size(), otherChild.mIdPositions.size()); i < maxDepth; i++)
+		if (idElems.peek().equals(mIdElem))
 		{
-			if (!otherChild.mIdPositions.get(i).equals(mIdPositions.get(i)))
-			{
-				return false;
-			}
-		}
+			idElems.remove();
 
-		// I will be direct/indirect parent of the child.
-		// Check if it must be a direct child.
-		if (mIdPositions.size() + 1 == otherChild.mIdPositions.size())
-		{
+			// Delegate insertion to my children.
+			// If it succeeds, it means I'm an older ancestor of the child - we stop.
+			for (IdSystemNode myChild : mChildren)
+			{
+				if (myChild.insert(otherChild, idElems))
+				{
+					return true;
+				}
+			}
+
+			// I will be the parent of the child. Update if child is duplicated, or add it
 			int index = mChildren.indexOf(otherChild);
 
 			if (index != -1)
@@ -142,29 +142,15 @@ public class IdSystemNode
 			}
 			else
 			{
+				otherChild.mParent = this;
+				otherChild.initController();
 				mChildren.add(otherChild);
-				otherChild.initController(idText);
 			}
 
 			return true;
 		}
 
-		// I will be an indirect parent of the child.
-		// Delegate insertion to my direct children.
-		for (IdSystemNode myChild : mChildren)
-		{
-			if (myChild.insert(otherChild, idText))
-			{
-				return true;
-			}
-		}
-
 		return false;
-	}
-
-	boolean isRoot()
-	{
-		return (mIdPositions.size() == 1);
 	}
 
 	void removeFromModelAndGridPane()
@@ -178,16 +164,24 @@ public class IdSystemNode
 		mChildren.clear();
 	}
 
-	// Computes the default Maude-NPA textual id of this node, which has spaces
-	String unparseIdToNPAFormat()
+	private String unparseId(String separator)
 	{
-		String spacedIdText = String.valueOf(mIdPositions.get(0));
-
-		for (int i = 1; i < mIdPositions.size(); i++)
+		if (mParent != null)
 		{
-			spacedIdText += " . " + String.valueOf(mIdPositions.get(i));
+			return (mParent.unparseId(separator) + separator + mIdElem.toString());
 		}
 
-		return spacedIdText;
+		return mIdElem.toString();
+	}
+
+	// Computes the default Maude-NPA textual id of this node
+	String unparseIdSpaced()
+	{
+		return unparseId(" . ");
+	}
+
+	public String unparseIdUnspaced()
+	{
+		return unparseId(".");
 	}
 }

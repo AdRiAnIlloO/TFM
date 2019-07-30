@@ -1,6 +1,9 @@
 package jbui.model;
 
+import java.util.LinkedList;
+
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import jbui.JBUI;
@@ -45,18 +48,7 @@ class JSONRunCommand extends AnswerableMaudeCommand
 				for (int i = 0; i < jsonIdSystemArray.length(); i++)
 				{
 					JSONObject jsonIdSystem = jsonIdSystemArray.getJSONObject(i);
-					String idText = jsonIdSystem.getString("id");
-					String msg = jsonIdSystem.getString("msg");
-					IdSystemNode node = new IdSystemNode(idText, msg);
-
-					if (node.isRoot())
-					{
-						JBUI.getMaudeThinker().mRootIdSystemNode = node;
-						node.initController(idText);
-						continue;
-					}
-
-					JBUI.getMaudeThinker().mRootIdSystemNode.insert(node, idText);
+					createAndInsertNode(jsonIdSystem);
 				}
 
 				JBUI.getMaudeThinker().onIdSystemNodesAdded();
@@ -68,6 +60,34 @@ class JSONRunCommand extends AnswerableMaudeCommand
 		}
 
 		return true;
+	}
+
+	private void createAndInsertNode(JSONObject jsonIdSystem) throws JSONException
+	{
+		JSONArray jsonId = jsonIdSystem.getJSONArray("id");
+		LinkedList<IdElem> idElems = new LinkedList<>();
+
+		for (int i = 0; i < jsonId.length(); i++)
+		{
+			JSONObject jsonIdElem = jsonId.getJSONObject(i);
+			int idElemNum = jsonIdElem.getInt("elem");
+			int subIdElemNum = jsonIdElem.optInt("subElem", 0);
+			IdElem idElem = new IdElem(idElemNum, subIdElemNum);
+			idElems.add(idElem);
+		}
+
+		String msg = jsonIdSystem.getString("msg");
+		IdSystemNode node = new IdSystemNode(idElems.getLast(), msg);
+
+		if (idElems.size() == 1)
+		{
+			assert (JBUI.getMaudeThinker().mRootIdSystemNode == null);
+			JBUI.getMaudeThinker().mRootIdSystemNode = node;
+			node.initController();
+			return;
+		}
+
+		JBUI.getMaudeThinker().mRootIdSystemNode.insert(node, idElems);
 	}
 
 	@Override

@@ -22,7 +22,7 @@ public class JBUI extends Application
 	{
 		return sInstance.mMainController.mDrawingCanvas;
 	}
-	
+
 	public static MainController getMainController()
 	{
 		return sInstance.mMainController;

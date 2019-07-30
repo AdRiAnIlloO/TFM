@@ -148,7 +148,7 @@ public class MaudeThinker extends AnimationTimer
 		for (int auxDepth = 1; auxDepth <= depth; auxDepth++)
 		{
 			MaudeCommand command = new JSONRunCommand(mAttackStateId, node.getDepth() + auxDepth,
-					node.unparseIdToNPAFormat());
+					node.unparseIdSpaced());
 			mMaudeInCommands.add(command);
 		}
 	}

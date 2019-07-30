@@ -133,10 +133,10 @@ public class CanvasNodeController
 	{
 		mEllipse.setFill(Color.BLUE);
 	}
-	
-	public void setModelData(String idText, IdSystemNode modelNode)
+
+	public void setModelData(IdSystemNode modelNode)
 	{
-		mIdLabel.setText(idText);
+		mIdLabel.setText(modelNode.unparseIdUnspaced());
 		mModelNode = modelNode;
 	}
 

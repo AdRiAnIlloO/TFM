@@ -20,19 +20,21 @@ mod MAUDE-NPA-JSON is
 	op toJSON : System -> String .
 	eq toJSON(S) = qidList2string(metaPrettyPrint(['MAUDE-NPA], upTerm(S), none)) .
 
-	--- Given an Id, returns a JSON representation, stripping out spaces; no surrounding delimiters.
-	--- NOTE: For the general case, we must use Id as tail, as it has identity, unlike lower sorts in the order relation.
+	--- Given an Id, returns a JSON representation.
+	--- Each JSON object contains a main identifier (key "elem") and, if present, an internal sub-identifier (key "subElem").
 	op unparseId : Id -> String .
-	eq unparseId(N) = string(N, 10) .
-	eq unparseId(N . I) = unparseId(N) + "." + unparseId(I) .
+	eq unparseId(N) = "{ \"elem\": " + string(N, 10) + " }" .
+	eq unparseId(IE{N}) = "{ \"elem\": " + string(IE, 10) + ", \"subElem\": " + string(N, 10) + " }" .
+	eq unparseId(IE . I) = unparseId(IE) + ", " + unparseId(I) .
 
-	--- Given an IdSystemSet, returns a JSON representation, surrounding each Id with escaped quotes
+	--- Given an IdSystemSet, returns a JSON representation.
+	--- Each JSON object contains an "id", which is a list of identifier elements, and a message.
 	op unparseISS : IdSystemSet -> String .
 	eq unparseISS(empty) = "" .
-	eq unparseISS((< I > (S))) = "{ \"id\": \"" + unparseId(I) + "\", \"msg\": \"" + toJSON(S) + "\" }" .
+	eq unparseISS((< I > (S))) = "{ \"id\": [" + unparseId(I) + "], \"msg\": \"" + toJSON(S) + "\" }" .
 	eq unparseISS((IS) ISS) = unparseISS((IS)) + ", " + unparseISS(ISS) [owise] .
 
-	--- Given a high-level protocol computation  result, returns a JSON representation
+	--- Given a high-level protocol computation result, returns a JSON representation
 	op toJSON : IdSystemSet-or-Error -> String .
 	eq toJSON(ISS) = "[" + unparseISS(ISS) + "]" .
 	eq toJSON(ISSoE) = "[]" [owise] .
