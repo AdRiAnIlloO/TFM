@@ -7,9 +7,7 @@ import java.net.URL;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.canvas.Canvas;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import jbui.controller.MainController;
 import jbui.model.MaudeThinker;
@@ -17,11 +15,6 @@ import jbui.model.MaudeThinker;
 public class JBUI extends Application
 {
 	public static JBUI sInstance;
-
-	public static Canvas getDrawingCanvas()
-	{
-		return sInstance.mMainController.mDrawingCanvas;
-	}
 
 	public static MainController getMainController()
 	{
@@ -36,11 +29,6 @@ public class JBUI extends Application
 	public static MaudeThinker getMaudeThinker()
 	{
 		return sInstance.mMaudeThinker;
-	}
-
-	public static GridPane getNodesGridPane()
-	{
-		return sInstance.mMainController.mNodesGridPane;
 	}
 
 	public static URL getResource(String name)

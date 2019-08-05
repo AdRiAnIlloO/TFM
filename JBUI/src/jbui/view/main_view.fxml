@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.Cursor?>
-<?import javafx.scene.canvas.Canvas?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
@@ -10,12 +10,7 @@
 <?import javafx.scene.control.ToolBar?>
 <?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
-<?import javafx.scene.layout.RowConstraints?>
-<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
 <BorderPane prefHeight="400.0" prefWidth="400.0"
@@ -56,7 +51,7 @@
 		<VBox xmlns="http://javafx.com/javafx/8.0.171"
 			xmlns:fx="http://javafx.com/fxml/1">
 			<children>
-				<ToolBar prefHeight="40.0" prefWidth="200.0">
+				<ToolBar>
 					<items>
 						<Button fx:id="mSingleStepBtn" disable="true"
 							mnemonicParsing="false" text="Single step">
@@ -72,39 +67,26 @@
 									text="Search from this node by an arbitrary depth amount" />
 							</tooltip>
 						</Button>
+						<Button fx:id="mFoldToggleBtn" disable="true"
+							mnemonicParsing="false" text="Fold">
+							<tooltip>
+								<Tooltip
+									text="Hide or show the selected node's children, except indirect children of folded children" />
+							</tooltip>
+						</Button>
 					</items>
 				</ToolBar>
-				<ScrollPane fx:id="mScrollPane" fitToHeight="true"
-					fitToWidth="true" pannable="true" prefHeight="350.0"
-					VBox.vgrow="ALWAYS">
-					<content>
-						<HBox alignment="TOP_CENTER">
-							<children>
-								<StackPane maxHeight="40.0" maxWidth="40.0">
-									<children>
-										<Pane fx:id="mCanvasPane">
-											<children>
-												<Canvas fx:id="mDrawingCanvas" height="40.0"
-													width="40.0" />
-											</children>
-										</Pane>
-										<GridPane fx:id="mNodesGridPane" hgap="40.0"
-											vgap="40.0">
-											<columnConstraints>
-												<ColumnConstraints hgrow="SOMETIMES" />
-											</columnConstraints>
-											<rowConstraints>
-												<RowConstraints vgrow="SOMETIMES" />
-											</rowConstraints>
-										</GridPane>
-									</children>
-								</StackPane>
-							</children>
-						</HBox>
-					</content>
+				<ScrollPane fx:id="mScrollPane" pannable="true"
+					style="-fx-font-size: 14;" VBox.vgrow="ALWAYS">
 					<cursor>
 						<Cursor fx:constant="OPEN_HAND" />
 					</cursor>
+					<content>
+						<Pane fx:id="mTreePane" />
+					</content>
+					<padding>
+						<Insets left="5.0" right="5.0" />
+					</padding>
 				</ScrollPane>
 			</children>
 		</VBox>

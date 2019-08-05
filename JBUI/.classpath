@@ -10,5 +10,9 @@
 	<classpathentry kind="con"
 		path="org.eclipse.fx.ide.jdt.core.JAVAFX_CONTAINER" />
 	<classpathentry kind="lib" path="lib/java-json.jar" />
+	<classpathentry kind="lib" path="lib/fxtreelayout.jar"
+		sourcepath="lib/fxtreelayout.jar" />
+	<classpathentry kind="lib"
+		path="lib/org.abego.treelayout.core-1.0.3.jar" />
 	<classpathentry kind="output" path="bin" />
 </classpath>

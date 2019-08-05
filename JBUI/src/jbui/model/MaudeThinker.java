@@ -12,7 +12,6 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 import javafx.animation.AnimationTimer;
-import javafx.scene.canvas.GraphicsContext;
 import jbui.JBUI;
 import jbui.persistence.DAOThread;
 
@@ -20,14 +19,7 @@ public class MaudeThinker extends AnimationTimer
 {
 	private enum State
 	{
-		Initial, Processing,
-
-		// This is separated from RefreshingGridPane to ensure that nodes are painted
-		// properly by the state's enter tick, so only then arcs will be painted fine
-		RefreshingCanvas,
-
-		// This is separated from Processing to ensure refreshing is not repeated
-		RefreshingGridPane
+		Initial, Processing
 	}
 
 	private int mAttackStateId;
@@ -66,12 +58,6 @@ public class MaudeThinker extends AnimationTimer
 		Thread thread = new Thread(mDAOThread);
 		thread.setDaemon(true);
 		thread.start();
-	}
-
-	private void clearCanvas()
-	{
-		GraphicsContext ctx = JBUI.getDrawingCanvas().getGraphicsContext2D();
-		ctx.clearRect(0, 0, ctx.getCanvas().getWidth(), ctx.getCanvas().getHeight());
 	}
 
 	@Override
@@ -122,25 +108,7 @@ public class MaudeThinker extends AnimationTimer
 
 			break;
 		}
-		case RefreshingGridPane:
-		{
-			mRootIdSystemNode.addToGridPane(0, 0, null);
-			mState = State.RefreshingCanvas;
-			break;
 		}
-		case RefreshingCanvas:
-		{
-			clearCanvas();
-			mRootIdSystemNode.drawArcs(JBUI.getDrawingCanvas().getGraphicsContext2D());
-			mState = State.Processing;
-			break;
-		}
-		}
-	}
-
-	void onIdSystemNodesAdded()
-	{
-		mState = State.RefreshingGridPane;
 	}
 
 	public void performGuidedSearch(int depth, IdSystemNode node)
@@ -180,9 +148,8 @@ public class MaudeThinker extends AnimationTimer
 		{
 			if (mRootIdSystemNode != null)
 			{
-				mRootIdSystemNode.removeFromModelAndGridPane();
+				JBUI.getMainController().clearTree(mRootIdSystemNode.mUIController);
 				mRootIdSystemNode = null;
-				clearCanvas();
 			}
 
 			// Try mark answerable command as aborted

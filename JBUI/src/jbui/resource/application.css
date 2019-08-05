@@ -1,1 +1,40 @@
-/* JavaFX CSS - Leave this comment until you have at least create one rule which uses -fx-Property */
+.root
+{
+	-state_node_color: violet; /* Default */
+}
+
+.state_node_label
+{
+	-fx-font-size: 16;
+	-fx-fill: white;
+	-fx-font-weight: 600;
+}
+
+.state_node_label:folded
+{
+	-fx-fill: black;
+}
+
+/* Node whose search state continuity may be unknown yet or not */
+.state_node
+{
+	-fx-cursor: hand;
+	-fx-fill: derive(-state_node_color, 0.0%);
+}
+
+.state_node:selected
+{
+	-fx-fill: derive(-state_node_color, -25.0%);
+}
+
+/* Last node in a search branch which is an initial state (attack source/origin) */
+.initial_state_node
+{
+	-state_node_color: red;
+}
+
+/* Last node in a search branch which is not an initial state (continuity stopping) */
+.limit_state_node
+{
+	-state_node_color: blue;
+}

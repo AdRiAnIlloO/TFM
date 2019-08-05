@@ -50,8 +50,6 @@ class JSONRunCommand extends AnswerableMaudeCommand
 					JSONObject jsonIdSystem = jsonIdSystemArray.getJSONObject(i);
 					createAndInsertNode(jsonIdSystem);
 				}
-
-				JBUI.getMaudeThinker().onIdSystemNodesAdded();
 			}
 			catch (Exception e)
 			{
@@ -83,7 +81,7 @@ class JSONRunCommand extends AnswerableMaudeCommand
 		{
 			assert (JBUI.getMaudeThinker().mRootIdSystemNode == null);
 			JBUI.getMaudeThinker().mRootIdSystemNode = node;
-			node.initController();
+			node.mUIController = JBUI.getMainController().createFXTreeLayout(node);
 			return;
 		}
 
