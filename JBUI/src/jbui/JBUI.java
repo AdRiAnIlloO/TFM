@@ -48,7 +48,7 @@ public class JBUI extends Application
 	public File mProtocolModuleFile;
 	public Stage mStage;
 
-	public JBUI() throws IOException
+	public JBUI()
 	{
 		mMaudeThinker = new MaudeThinker();
 	}
