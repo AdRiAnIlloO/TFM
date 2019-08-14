@@ -28,11 +28,11 @@ public class MaudeThinker extends AnimationTimer
 
 	// To be used if user selected a new NPA module, but not a new process,
 	// and confirms general paths alert. Also to destroy() it, to prevent leaking.
-	public Process mCurMaudeProcess;
+	private Process mCurMaudeProcess;
 
 	// To be used if user selected a new process, but not a new NPA module,
 	// and confirms general paths alert
-	public String mCurNPAModuleTextInput;
+	private String mCurNPAModuleTextInput;
 
 	public DAOThread mDAOThread;
 	public String mJSONModuleTextInput;
@@ -182,6 +182,11 @@ public class MaudeThinker extends AnimationTimer
 			try
 			{
 				updateMainComponents();
+
+				if (mCurNPAModuleTextInput != null)
+				{
+					JBUI.getMainController().unblockProtocolLaunches();
+				}
 			}
 			catch (Exception e)
 			{

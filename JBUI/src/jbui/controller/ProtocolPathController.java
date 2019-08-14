@@ -59,16 +59,7 @@ public class ProtocolPathController extends LoadablesController
 		{
 			JBUI.sInstance.mProtocolModuleFile = mProtocolModuleFile;
 
-			// Validate base requirements
-			if (JBUI.getMaudeThinker().mCurMaudeProcess == null
-					|| JBUI.getMaudeThinker().mCurNPAModuleTextInput == null)
-			{
-				Alert alert = new Alert(AlertType.WARNING);
-				alert.setContentText(
-						"There is one or more missing general Maude paths. Please, configure them via the \"File > Set Maude paths...\" menu.");
-				alert.showAndWait();
-			}
-			else if (!JBUI.getMaudeThinker().tryLaunchProtocolNow(JBUI.getMaudeBinFile(), mProtocolModuleTextInput))
+			if (!JBUI.getMaudeThinker().tryLaunchProtocolNow(JBUI.getMaudeBinFile(), mProtocolModuleTextInput))
 			{
 				Alert alert = new Alert(AlertType.WARNING);
 				alert.setContentText("Sorry, couldn't start the initial conversation with Maude");

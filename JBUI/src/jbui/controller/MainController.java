@@ -8,6 +8,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Cursor;
 import javafx.scene.control.Button;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.Pane;
 import jbui.JBUI;
@@ -25,6 +26,9 @@ public class MainController
 	private Button mFoldToggleBtn;
 
 	FXTreeLayout mFXTreeLayout;
+
+	@FXML
+	private MenuItem mProtocolLaunchBtn;
 
 	@FXML
 	private ScrollPane mScrollPane;
@@ -141,6 +145,11 @@ public class MainController
 			mScrollPane.setCursor(Cursor.CLOSED_HAND);
 		});
 
+		mProtocolLaunchBtn.setOnAction(event ->
+		{
+			showConfirmationAlert(ProtocolPathAlert.class);
+		});
+
 		mSingleStepBtn.setOnAction(event ->
 		{
 			assert (mSelectedNodeController != null);
@@ -184,12 +193,6 @@ public class MainController
 		showConfirmationAlert(GeneralPathsAlert.class);
 	}
 
-	@FXML
-	private void onNewAttackMenuClick(ActionEvent event) throws IOException
-	{
-		showConfirmationAlert(ProtocolPathAlert.class);
-	}
-
 	void selectScreenNode(IdSystemNodeUIController node)
 	{
 		if (mSelectedNodeController == null)
@@ -223,6 +226,11 @@ public class MainController
 		{
 			e.printStackTrace();
 		}
+	}
+
+	public void unblockProtocolLaunches()
+	{
+		mProtocolLaunchBtn.setDisable(false);
 	}
 
 	private void updateSelectedNodeMarginX()

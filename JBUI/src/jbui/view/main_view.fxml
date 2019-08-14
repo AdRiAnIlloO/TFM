@@ -30,8 +30,8 @@
 				</Menu>
 				<Menu mnemonicParsing="false" text="Launch">
 					<items>
-						<MenuItem mnemonicParsing="false"
-							onAction="#onNewAttackMenuClick" text="New attack..." />
+						<MenuItem fx:id="mProtocolLaunchBtn" disable="true"
+							mnemonicParsing="false" text="New Protocol..." />
 					</items>
 				</Menu>
 				<Menu disable="true" mnemonicParsing="false" text="Edit">
