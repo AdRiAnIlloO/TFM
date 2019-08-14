@@ -1,6 +1,7 @@
 package jbui.model;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 
 abstract class AnswerableMaudeCommand extends MaudeCommand
 {
@@ -27,28 +28,39 @@ abstract class AnswerableMaudeCommand extends MaudeCommand
 	@Override
 	boolean checkAnswer(BufferedReader bufferedReader)
 	{
-		boolean isExpectedAnswerDetected = false;
-
 		try
 		{
-			// Read all ready lines while checking answer, even if the checking succeeds
-			for (; bufferedReader.ready();)
+			if (bufferedReader.ready())
 			{
-				String line = bufferedReader.readLine();
-				System.out.println(line);
+				String answer = "";
 
-				if (!isExpectedAnswerDetected)
+				// Read all ready input, even if it is exceeds the expected substring
+				do
 				{
-					isExpectedAnswerDetected = checkAnswer(line);
+					char[] charBuf = new char[1];
+					bufferedReader.read(charBuf);
+					answer += charBuf[0];
+				}
+				while (bufferedReader.ready());
+
+				System.out.println(answer);
+				String[] lines = answer.split("\n");
+
+				for (String line : lines)
+				{
+					if (checkAnswer(line))
+					{
+						return true;
+					}
 				}
 			}
 		}
-		catch (Exception e)
+		catch (IOException e)
 		{
 			e.printStackTrace();
 		}
 
-		return isExpectedAnswerDetected;
+		return false;
 	}
 
 	abstract boolean checkAnswer(String line);
