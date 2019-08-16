@@ -1,17 +1,23 @@
 package jbui.controller;
 
+import java.io.IOException;
+import java.net.URL;
 import java.util.Optional;
 
 import fxtreelayout.NestedOvalTextNode;
 import fxtreelayout.OvalTextNode;
 import javafx.css.PseudoClass;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Region;
 import javafx.scene.shape.Path;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.stage.Stage;
 import jbui.JBUI;
 import jbui.model.IdSystemNode;
 
@@ -88,16 +94,25 @@ public class IdSystemNodeUIController
 
 		getPath().setOnMousePressed(event ->
 		{
+			JBUI.getMainController().selectScreenNode(this);
+
 			switch (event.getButton())
 			{
+			case PRIMARY:
+			{
+				if (event.getClickCount() > 1)
+				{
+					showDetailWindow();
+				}
+
+				break;
+			}
 			case SECONDARY:
 			{
 				createAndShowContextMenu(event);
+				break;
 			}
 			default:
-			{
-				JBUI.getMainController().selectScreenNode(this);
-			}
 			}
 		});
 	}
@@ -126,6 +141,27 @@ public class IdSystemNodeUIController
 	void select()
 	{
 		getPath().pseudoClassStateChanged(SELECTED_PSEUDO_CLASS, true);
+	}
+
+	private void showDetailWindow()
+	{
+		try
+		{
+			URL url = JBUI.getResource("view/NodeDetailWindow.fxml");
+			FXMLLoader loader = new FXMLLoader(url);
+			Region region = loader.load();
+			((NodeDetailController) loader.getController()).init(mModelNode);
+			Stage stage = new Stage();
+			Scene scene = new Scene(region);
+			stage.setScene(scene);
+			stage.show();
+			stage.setMinWidth(region.getMinWidth());
+			stage.setMinHeight(region.getMinHeight());
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
 	}
 
 	void unfold()

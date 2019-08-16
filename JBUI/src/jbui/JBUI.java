@@ -64,8 +64,6 @@ public class JBUI extends Application
 		URL url = getClass().getResource("view/MainView.fxml");
 		BorderPane root = FXMLLoader.load(url);
 		Scene scene = new Scene(root);
-		String formStr = getClass().getResource("resource/application.css").toExternalForm();
-		scene.getStylesheets().add(formStr);
 		primaryStage.setScene(scene);
 		primaryStage.setTitle("Maude-NPA JBUI");
 		primaryStage.show();

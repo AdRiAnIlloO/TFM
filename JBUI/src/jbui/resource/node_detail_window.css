@@ -1,0 +1,32 @@
+#msgFlowScrollPane
+{
+   -fx-background-color: transparent;
+}
+
+#msgFlowScrollPane .label, #newChannelSeparator
+{
+	-fx-border-color: black;
+}
+
+#msgFlowScrollPane .label
+{
+	-fx-font-size: 16px;
+	-fx-border-width: 1px;
+}
+
+/* Margin for a cool offset from the channel line edges to their nearest message box */
+.edgeMsgHBox
+{
+	-fx-padding: 20 0 20 0;
+}
+
+#newChannelSeparator
+{
+	-fx-border-radius: 3px;
+	-fx-border-width: 4px;
+}
+
+#newChannelSeparator > .line
+{
+	-fx-border-color: lightblue;
+}

@@ -7,52 +7,71 @@ mod MAUDE-NPA-JSON is
 		Nat < IdElem <   Id   < IdSystem < IdSystemSet < IdSystemSet-or-Error
 					   System
 	***)
-	var N : Nat .
-	var B : Bound .
-	var IE : IdElem .
-	var I : Id .
-	var S : System .
-	var IS : IdSystem .
-	var ISS : IdSystemSet .
-	var ISSoE : IdSystemSet-or-Error .
-
+	var bound : Bound .
+	var ghostList : GhostList .
+	var id : Id .
+	var idElem : IdElem .
+	var idSys : IdSystem .
+	var idSysSet : IdSystemSet .
+	var idSysSetOrErr : IdSystemSet-or-Error .
+	var intruderK : IntruderKnowledge .
+	var msgVar : Msg .
+	var n : Nat .
+	var props : Properties .
+	var sMsgElem : SMsgElem .
+	var sMsgList : SMsgList .
+	var strandSet : StrandSet$ .
+	var sys : System .
+	var t : Term .
+	
+	--- Includes quotes to achieve the additional text indirection
+	op unparseTerm : Term -> String .
+	eq unparseTerm(t) = "\"" + qidList2string(metaPrettyPrint(['MAUDE-NPA], t, none)) + "\"" .
+	
+	op unparseMsgSeqList : SMsgList -> String .
+	eq unparseMsgSeqList(+(msgVar)) = "{ \"isSend\": true, \"msg\": " + unparseTerm(upTerm(msgVar)) + " }" .
+	eq unparseMsgSeqList(-(msgVar)) = "{ \"isSend\": false, \"msg\": " + unparseTerm(upTerm(msgVar)) + " }" .
+	eq unparseMsgSeqList(sMsgElem, sMsgList) = unparseMsgSeqList(sMsgElem) + ", " + unparseMsgSeqList(sMsgList) [owise] .
+	
 	--- Given a System, returns a JSON representation
-	op toJSON : System -> String .
-	eq toJSON(S) = qidList2string(metaPrettyPrint(['MAUDE-NPA], upTerm(S), none)) .
+	op unparseSystem : System -> String .
+	eq unparseSystem(strandSet || intruderK || sMsgList || ghostList || props) =
+		"{ \"strandSet\": " + unparseTerm(upTerm(strandSet))
+		+ ", \"intruderKnowledge\": " + unparseTerm(upTerm(intruderK))
+		+ ", \"msgSeqList\": [" + unparseMsgSeqList(sMsgList)
+		+ "], \"ghostList\": " + (if ghostList =/= nil then unparseTerm(upTerm(ghostList)) else "null" fi)
+		+ ", \"props\": " + (if props =/= nil then unparseTerm(upTerm(props)) else "null" fi) + " }" .
 
 	--- Given an Id, returns a JSON representation.
 	--- Each JSON object contains a main identifier (key "elem") and, if present, an internal sub-identifier (key "subElem").
 	op unparseId : Id -> String .
-	eq unparseId(N) = "{ \"elem\": " + string(N, 10) + " }" .
-	eq unparseId(IE{N}) = "{ \"elem\": " + string(IE, 10) + ", \"subElem\": " + string(N, 10) + " }" .
-	eq unparseId(IE . I) = unparseId(IE) + ", " + unparseId(I) .
+	eq unparseId(n) = "{ \"elem\": " + string(n, 10) + " }" .
+	eq unparseId(idElem{n}) = "{ \"elem\": " + string(idElem, 10) + ", \"subElem\": " + string(n, 10) + " }" .
+	eq unparseId(idElem . id) = unparseId(idElem) + ", " + unparseId(id) .
 
 	--- Given an IdSystemSet, returns a JSON representation.
 	--- Each JSON object contains an "id", which is a list of identifier elements, and a message.
 	op unparseISS : IdSystemSet -> String .
 	eq unparseISS(empty) = "" .
-	eq unparseISS((< I > (S))) = "{ \"id\": [" + unparseId(I) + "], \"msg\": \"" + toJSON(S) + "\" }" .
-	eq unparseISS((IS) ISS) = unparseISS((IS)) + ", " + unparseISS(ISS) [owise] .
+	eq unparseISS((< id > (sys))) = "{ \"id\": [" + unparseId(id) + "], \"system\": " + unparseSystem(sys) + " }" .
+	eq unparseISS((idSys) idSysSet) = unparseISS((idSys)) + ", " + unparseISS(idSysSet) [owise] .
 
 	--- Given a high-level protocol computation result, returns a JSON representation
 	op toJSON : IdSystemSet-or-Error -> String .
-	eq toJSON(ISS) = "[" + unparseISS(ISS) + "]" .
-	eq toJSON(ISSoE) = "[]" [owise] .
+	eq toJSON(idSysSet) = "[" + unparseISS(idSysSet) + "]" .
+	eq toJSON(idSysSetOrErr) = "[]" [owise] .
 	
 	op runJSON[_]`(_`, _`) : Id-SMsgList Nat Bound -> String .
-	eq runJSON[I:Id-SMsgList](N, B) = toJSON(debug[I:Id-SMsgList](N, B)) .
+	eq runJSON[id:Id-SMsgList](n, bound) = toJSON(debug[id:Id-SMsgList](n, bound)) .
 
 	--- A simple convenience wrapper to toJSON
 	op runJSON : Nat Bound -> String .
-	eq runJSON(N, B) = runJSON[1](N, B) .
+	eq runJSON(n, bound) = runJSON[1](n, bound) .
 	
 	op countAttackStatesFrom : Nat -> Nat .
-	eq countAttackStatesFrom(N) =
-		if extractAttack(N) :: Attack
-		then 1 + countAttackStatesFrom(N + 1)
-		else 0
-		fi .
+	eq countAttackStatesFrom(n) = if extractAttack(n) :: Attack then 1 + countAttackStatesFrom(n + 1) else 0 fi .
 	
+	--- Counts the number of current protocol's attack states (start of backwards search)
 	op countAttackStates : -> Nat .
 	eq countAttackStates = countAttackStatesFrom(0) .
 endm

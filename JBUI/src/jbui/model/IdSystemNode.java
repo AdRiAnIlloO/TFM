@@ -4,25 +4,48 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import jbui.JBUI;
 import jbui.controller.IdSystemNodeUIController;
 
 public class IdSystemNode
 {
+	public class MsgElement
+	{
+		public final boolean mIsSend;
+		public final String mMsg;
+
+		private MsgElement(JSONObject jsonMsgElem) throws JSONException
+		{
+			mIsSend = jsonMsgElem.getBoolean("isSend");
+			mMsg = jsonMsgElem.getString("msg");
+		}
+	}
+
 	// Used to advance from the last global tree depth
 	static int sMaxTreeDepth;
 
 	private List<IdSystemNode> mChildren;
 	private IdElem mIdElem;
-	private String mMsg;
+	public List<MsgElement> mMsgElemSequences;
 	private IdSystemNode mParent;
 	IdSystemNodeUIController mUIController;
 
-	IdSystemNode(IdElem idElem, String msg)
+	IdSystemNode(IdElem idElem, JSONObject jsonMsg) throws JSONException
 	{
-		mMsg = msg;
-		mChildren = new ArrayList<>();
 		mIdElem = idElem;
+		mChildren = new ArrayList<>();
+		JSONArray jsonMsgElemSeq = jsonMsg.getJSONArray("msgSeqList");
+		mMsgElemSequences = new ArrayList<>();
+
+		for (int i = 0; i < jsonMsgElemSeq.length(); i++)
+		{
+			MsgElement msgElem = new MsgElement(jsonMsgElemSeq.getJSONObject(i));
+			mMsgElemSequences.add(msgElem);
+		}
 	}
 
 	private boolean equals(IdSystemNode node)
@@ -57,12 +80,21 @@ public class IdSystemNode
 
 		return 0;
 	}
+	
+	public IdSystemNode getParent()
+	{
+		return mParent;
+	}
 
 	boolean insert(IdSystemNode otherChild, Queue<IdElem> idElems)
 	{
 		if (idElems.peek().equals(mIdElem))
 		{
 			idElems.remove();
+
+			// Remove child messages already contained in this's
+			otherChild.mMsgElemSequences = otherChild.mMsgElemSequences.subList(0,
+					otherChild.mMsgElemSequences.size() - mMsgElemSequences.size());
 
 			// Delegate insertion to my children.
 			// If it succeeds, it means I'm an older ancestor of the child - we stop.
@@ -81,7 +113,7 @@ public class IdSystemNode
 			{
 				// Update only the message, just in case.
 				// Every other data from current node already invalidates child's.
-				mChildren.get(index).mMsg = otherChild.mMsg;
+				mChildren.get(index).mMsgElemSequences = otherChild.mMsgElemSequences;
 			}
 			else
 			{

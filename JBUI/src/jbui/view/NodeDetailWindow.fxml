@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
+
+<TabPane minHeight="200.0" minWidth="400.0"
+	stylesheets="@../resource/node_detail_window.css"
+	tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8.0.171"
+	xmlns:fx="http://javafx.com/fxml/1"
+	fx:controller="jbui.controller.NodeDetailController">
+	<tabs>
+		<Tab text="Message flow">
+			<content>
+				<ScrollPane id="msgFlowScrollPane"
+					fx:id="mMsgFlowScrollPane" pannable="true">
+					<content>
+						<StackPane fx:id="mMsgFlowStackPane">
+							<children>
+								<GridPane fx:id="mMsgFlowGridPane" prefHeight="0.0">
+									<columnConstraints>
+										<ColumnConstraints halignment="RIGHT"
+											minWidth="100.0" />
+										<ColumnConstraints />
+										<ColumnConstraints halignment="LEFT"
+											minWidth="100.0" />
+										<ColumnConstraints />
+										<ColumnConstraints halignment="CENTER"
+											minWidth="50.0" />
+									</columnConstraints>
+									<rowConstraints>
+										<RowConstraints />
+									</rowConstraints>
+									<children>
+										<Separator id="newChannelSeparator"
+											orientation="VERTICAL" GridPane.columnIndex="1"
+											GridPane.rowSpan="2147483647">
+											<GridPane.margin>
+												<Insets bottom="10.0" top="10.0" />
+											</GridPane.margin>
+										</Separator>
+										<Separator id="msgGroupsToIdSeparator"
+											orientation="VERTICAL" prefHeight="200.0"
+											GridPane.columnIndex="3" GridPane.rowSpan="2147483647">
+											<GridPane.margin>
+												<Insets bottom="10.0" left="5.0" right="5.0"
+													top="10.0" />
+											</GridPane.margin>
+										</Separator>
+									</children>
+									<padding>
+										<Insets bottom="10.0" left="10.0" right="10.0" />
+									</padding>
+								</GridPane>
+							</children>
+						</StackPane>
+					</content>
+				</ScrollPane>
+			</content>
+		</Tab>
+	</tabs>
+</TabPane>

@@ -69,15 +69,14 @@ class JSONRunCommand extends AnswerableMaudeCommand
 		{
 			JSONObject jsonIdElem = jsonId.getJSONObject(i);
 			int idElemNum = jsonIdElem.getInt("elem");
-			int subIdElemNum = jsonIdElem.optInt("subElem", 0);
+			int subIdElemNum = jsonIdElem.optInt("subElem");
 			IdElem idElem = new IdElem(idElemNum, subIdElemNum);
 			idElems.add(idElem);
 		}
 
-		String msg = jsonIdSystem.getString("msg");
-		IdSystemNode node = new IdSystemNode(idElems.getLast(), msg);
+		IdSystemNode node = new IdSystemNode(idElems.getLast(), jsonIdSystem.getJSONObject("system"));
 
-		if (idElems.size() == 1)
+		if (idElems.size() < 2)
 		{
 			assert (JBUI.getMaudeThinker().mRootIdSystemNode == null);
 			JBUI.getMaudeThinker().mRootIdSystemNode = node;
