@@ -69,7 +69,7 @@ public class ProtocolPathController extends LoadablesController
 			{
 				LoadablesAlert<ProtocolInitController> alert = new LoadablesAlert<>("Protocol initialization",
 						String.format("Initialize the protocol '%s'", mProtocolModuleFile.getAbsolutePath()),
-						"view/protocol_init_window.fxml");
+						"view/ProtocolInitWindow.fxml");
 				alert.showAndWaitAndHandle();
 			}
 		}

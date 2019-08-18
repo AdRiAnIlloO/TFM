@@ -61,7 +61,7 @@ public class JBUI extends Application
 		mMaudeThinker.start();
 
 		// Load main window
-		URL url = getClass().getResource("view/main_view.fxml");
+		URL url = getClass().getResource("view/MainView.fxml");
 		BorderPane root = FXMLLoader.load(url);
 		Scene scene = new Scene(root);
 		String formStr = getClass().getResource("resource/application.css").toExternalForm();
