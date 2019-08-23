@@ -80,7 +80,7 @@ public class IdSystemNode
 
 		return 0;
 	}
-	
+
 	public IdSystemNode getParent()
 	{
 		return mParent;
@@ -90,33 +90,30 @@ public class IdSystemNode
 	{
 		if (idElems.peek().equals(mIdElem))
 		{
-			idElems.remove();
-
-			// Remove child messages already contained in this's
-			otherChild.mMsgElemSequences = otherChild.mMsgElemSequences.subList(0,
-					otherChild.mMsgElemSequences.size() - mMsgElemSequences.size());
-
-			// Delegate insertion to my children.
-			// If it succeeds, it means I'm an older ancestor of the child - we stop.
-			for (IdSystemNode myChild : mChildren)
+			if (idElems.size() < 2)
 			{
-				if (myChild.insert(otherChild, idElems))
-				{
-					return true;
-				}
-			}
-
-			// I will be the parent of the child. Update if child is duplicated, or add it.
-			int index = mChildren.indexOf(otherChild);
-
-			if (index != -1)
-			{
-				// Update only the message, just in case.
-				// Every other data from current node already invalidates child's.
-				mChildren.get(index).mMsgElemSequences = otherChild.mMsgElemSequences;
+				// The child is duplicated of me via full ID. Update the system info content.
+				mMsgElemSequences = otherChild.mMsgElemSequences;
 			}
 			else
 			{
+				idElems.remove();
+
+				// Remove child messages already contained in this's
+				otherChild.mMsgElemSequences = otherChild.mMsgElemSequences.subList(0,
+						otherChild.mMsgElemSequences.size() - mMsgElemSequences.size());
+
+				// Delegate insertion to my children.
+				// If it succeeds, it means I'm an older ancestor of the child - we stop.
+				for (IdSystemNode myChild : mChildren)
+				{
+					if (myChild.insert(otherChild, idElems))
+					{
+						return true;
+					}
+				}
+
+				// I must be the parent of the child
 				otherChild.mParent = this;
 				otherChild.mUIController = JBUI.getMainController().createChildNode(otherChild, mUIController);
 				mChildren.add(otherChild);
