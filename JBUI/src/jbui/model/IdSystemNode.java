@@ -17,12 +17,20 @@ public class IdSystemNode
 	{
 		public final boolean mIsSend;
 		public final String mMsg;
+		public final String mSignature;
 
 		private MsgElement(JSONObject jsonMsgElem) throws JSONException
 		{
 			mIsSend = jsonMsgElem.getBoolean("isSend");
 			mMsg = jsonMsgElem.getString("msg");
+			mSignature = jsonMsgElem.getString("signature");
 		}
+	}
+
+	// For now, LastReachable is not handled
+	public static enum StateType
+	{
+		Default, Initial
 	}
 
 	// Used to advance from the last global tree depth

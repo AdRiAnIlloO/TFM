@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.Cursor?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.Tab?>
@@ -23,7 +24,7 @@
 					<content>
 						<StackPane fx:id="mMsgFlowStackPane">
 							<children>
-								<GridPane fx:id="mMsgFlowGridPane" prefHeight="0.0">
+								<GridPane fx:id="mMsgFlowGridPane" prefHeight="50.0">
 									<columnConstraints>
 										<ColumnConstraints halignment="RIGHT"
 											minWidth="100.0" />
@@ -38,29 +39,33 @@
 										<RowConstraints />
 									</rowConstraints>
 									<children>
-										<Separator id="newChannelSeparator"
+										<Separator id="channelSeparator"
 											orientation="VERTICAL" GridPane.columnIndex="1"
 											GridPane.rowSpan="2147483647">
 											<GridPane.margin>
-												<Insets bottom="10.0" top="10.0" />
+												<Insets bottom="-10.0" top="-10.0" />
 											</GridPane.margin>
 										</Separator>
 										<Separator id="msgGroupsToIdSeparator"
 											orientation="VERTICAL" prefHeight="200.0"
 											GridPane.columnIndex="3" GridPane.rowSpan="2147483647">
 											<GridPane.margin>
-												<Insets bottom="10.0" left="5.0" right="5.0"
-													top="10.0" />
+												<Insets bottom="-10.0" left="5.0" right="5.0"
+													top="-10.0" />
 											</GridPane.margin>
 										</Separator>
 									</children>
 									<padding>
-										<Insets bottom="10.0" left="10.0" right="10.0" />
+										<Insets bottom="20.0" left="10.0" right="10.0"
+											top="20.0" />
 									</padding>
 								</GridPane>
 							</children>
 						</StackPane>
 					</content>
+					<cursor>
+						<Cursor fx:constant="OPEN_HAND" />
+					</cursor>
 				</ScrollPane>
 			</content>
 		</Tab>

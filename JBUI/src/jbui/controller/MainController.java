@@ -6,7 +6,6 @@ import fxtreelayout.FXTreeLayout;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.Cursor;
 import javafx.scene.control.Button;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
@@ -135,15 +134,16 @@ public class MainController
 		});
 
 		// Pick a better cursor for panning
-		mScrollPane.setOnMousePressed(event ->
-		{
-			event.setDragDetect(true);
-		});
-
-		mScrollPane.setOnDragDetected(event ->
-		{
-			mScrollPane.setCursor(Cursor.CLOSED_HAND);
-		});
+		ControllerUtil.setPanningHandScrollPaneCursors(mScrollPane);
+//		mScrollPane.setOnMousePressed(event ->
+//		{
+//			event.setDragDetect(true);
+//		});
+//
+//		mScrollPane.setOnDragDetected(event ->
+//		{
+//			mScrollPane.setCursor(Cursor.CLOSED_HAND);
+//		});
 
 		mProtocolLaunchBtn.setOnAction(event ->
 		{
