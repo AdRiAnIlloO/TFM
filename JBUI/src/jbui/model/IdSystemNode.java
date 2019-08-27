@@ -40,13 +40,15 @@ public class IdSystemNode
 	private IdElem mIdElem;
 	public List<MsgElement> mMsgElemSequences;
 	private IdSystemNode mParent;
+	public final StateType mStateType;
 	IdSystemNodeUIController mUIController;
 
-	IdSystemNode(IdElem idElem, JSONObject jsonMsg) throws JSONException
+	IdSystemNode(IdElem idElem, JSONObject jsonIdSystem) throws JSONException
 	{
+		mStateType = (jsonIdSystem.getBoolean("isInitial") ? StateType.Initial : StateType.Default);
 		mIdElem = idElem;
 		mChildren = new ArrayList<>();
-		JSONArray jsonMsgElemSeq = jsonMsg.getJSONArray("msgSeqList");
+		JSONArray jsonMsgElemSeq = jsonIdSystem.getJSONObject("system").getJSONArray("msgSeqList");
 		mMsgElemSequences = new ArrayList<>();
 
 		for (int i = 0; i < jsonMsgElemSeq.length(); i++)

@@ -44,28 +44,35 @@ public class IdSystemNodeUIController
 
 	private void createAndShowContextMenu(MouseEvent event)
 	{
-		MenuItem singleDepthSearchItem = new MenuItem("Search from this node (single step)");
-		MenuItem inputDepthSearchItem = new MenuItem("Search from this node...");
-		MenuItem foldToggleItem = new MenuItem(mScreenNode.isFolded() ? "Unfold" : "Fold");
+		MenuItem item = new MenuItem("View state content...");
+		ContextMenu contextMenu = new ContextMenu(item);
 
-		singleDepthSearchItem.setOnAction(actionEvent ->
+		if (mModelNode.mStateType == IdSystemNode.StateType.Default)
 		{
-			performGuidedSearch(1);
-		});
+			MenuItem singleDepthSearchItem = new MenuItem("Search from this node (single step)");
+			MenuItem inputDepthSearchItem = new MenuItem("Search from this node...");
+			MenuItem foldToggleItem = new MenuItem(mScreenNode.isFolded() ? "Unfold" : "Fold");
 
-		foldToggleItem.setOnAction(actionEvent ->
-		{
-			if (mScreenNode.isFolded())
+			singleDepthSearchItem.setOnAction(actionEvent ->
 			{
-				unfold();
-				return;
-			}
+				performGuidedSearch(1);
+			});
 
-			fold();
-		});
+			foldToggleItem.setOnAction(actionEvent ->
+			{
+				if (mScreenNode.isFolded())
+				{
+					unfold();
+					return;
+				}
 
-		inputDepthSearchItem.setOnAction(actionEvent -> promptSearchDepthDialog());
-		ContextMenu contextMenu = new ContextMenu(singleDepthSearchItem, inputDepthSearchItem, foldToggleItem);
+				fold();
+			});
+
+			inputDepthSearchItem.setOnAction(actionEvent -> promptSearchDepthDialog());
+			contextMenu.getItems().addAll(singleDepthSearchItem, inputDepthSearchItem, foldToggleItem);
+		}
+
 		contextMenu.show(getPath().getScene().getWindow(), event.getScreenX(), event.getScreenY());
 	}
 
@@ -91,6 +98,11 @@ public class IdSystemNodeUIController
 		getPath().getStyleClass().add("state_node");
 		mScreenNode.getIdText().getStyleClass().addAll("state_node_label");
 		mModelNode = modelNode;
+
+		if (modelNode.mStateType == IdSystemNode.StateType.Initial)
+		{
+			getPath().getStyleClass().add("initial_state_node");
+		}
 
 		getPath().setOnMousePressed(event ->
 		{
@@ -140,6 +152,10 @@ public class IdSystemNodeUIController
 
 	void select()
 	{
+		boolean disableButtons = (mModelNode.mStateType != IdSystemNode.StateType.Default);
+		JBUI.getMainController().mSingleStepBtn.setDisable(disableButtons);
+		JBUI.getMainController().mAnyStepBtn.setDisable(disableButtons);
+		JBUI.getMainController().mFoldToggleBtn.setDisable(disableButtons);
 		getPath().pseudoClassStateChanged(SELECTED_PSEUDO_CLASS, true);
 	}
 

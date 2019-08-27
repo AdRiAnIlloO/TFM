@@ -79,7 +79,9 @@ mod MAUDE-NPA-JSON is
 	--- Each JSON object contains an "id", which is a list of identifier elements, and a message.
 	op unparseISS : IdSystemSet -> String .
 	eq unparseISS(empty) = "" .
-	eq unparseISS((< id > (sys))) = "{ \"id\": [" + unparseId(id) + "], \"system\": " + unparseSystem(sys) + " }" .
+	eq unparseISS((< id > (sys))) = "{ \"isInitial\": "
+		+ (if isInitial(sys) then "true" else "false" fi)
+		+ ", \"id\": [" + unparseId(id) + "], \"system\": " + unparseSystem(sys) + " }" .
 	eq unparseISS((idSys) idSysSet) = unparseISS((idSys)) + ", " + unparseISS(idSysSet) [owise] .
 
 	--- Given a high-level protocol computation result, returns a JSON representation

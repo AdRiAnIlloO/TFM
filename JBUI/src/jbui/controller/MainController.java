@@ -19,10 +19,10 @@ public class MainController
 	private static int GAP_BETWEEN_NODES = 20;
 
 	@FXML
-	private Button mAnyStepBtn;
+	Button mAnyStepBtn;
 
 	@FXML
-	private Button mFoldToggleBtn;
+	Button mFoldToggleBtn;
 
 	FXTreeLayout mFXTreeLayout;
 
@@ -49,7 +49,7 @@ public class MainController
 	private double mSelectedNodePrevMarginY;
 
 	@FXML
-	private Button mSingleStepBtn;
+	Button mSingleStepBtn;
 
 	@FXML
 	private Pane mTreePane;

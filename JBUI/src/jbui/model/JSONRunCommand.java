@@ -74,7 +74,7 @@ class JSONRunCommand extends AnswerableMaudeCommand
 			idElems.add(idElem);
 		}
 
-		IdSystemNode node = new IdSystemNode(idElems.getLast(), jsonIdSystem.getJSONObject("system"));
+		IdSystemNode node = new IdSystemNode(idElems.getLast(), jsonIdSystem);
 
 		if (idElems.size() < 2)
 		{
