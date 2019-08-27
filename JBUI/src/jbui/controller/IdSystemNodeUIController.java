@@ -23,9 +23,11 @@ import jbui.model.IdSystemNode;
 
 public class IdSystemNodeUIController
 {
+	private static final String FOLD_LOCALIZATION_TOKEN = "Fold";
 	private static final PseudoClass FOLDED_PSEUDO_CLASS = PseudoClass.getPseudoClass("folded");
 	private static final Font PREFERED_FONT = new Font(16);
 	private static final PseudoClass SELECTED_PSEUDO_CLASS = PseudoClass.getPseudoClass("selected");
+	private static final String UNFOLD_LOCALIZATION_TOKEN = "Unfold";
 
 	private IdSystemNode mModelNode;
 	final OvalTextNode mScreenNode;
@@ -79,6 +81,7 @@ public class IdSystemNodeUIController
 	void fold()
 	{
 		JBUI.getMainController().mFXTreeLayout.fold(mScreenNode);
+		JBUI.getMainController().mFoldToggleBtn.setText(UNFOLD_LOCALIZATION_TOKEN);
 		getPath().pseudoClassStateChanged(FOLDED_PSEUDO_CLASS, true);
 		getIdText().pseudoClassStateChanged(FOLDED_PSEUDO_CLASS, true);
 	}
@@ -152,6 +155,8 @@ public class IdSystemNodeUIController
 
 	void select()
 	{
+		JBUI.getMainController().mFoldToggleBtn
+				.setText(mScreenNode.isFolded() ? UNFOLD_LOCALIZATION_TOKEN : FOLD_LOCALIZATION_TOKEN);
 		boolean disableButtons = (mModelNode.mStateType != IdSystemNode.StateType.Default);
 		JBUI.getMainController().mSingleStepBtn.setDisable(disableButtons);
 		JBUI.getMainController().mAnyStepBtn.setDisable(disableButtons);
@@ -183,6 +188,7 @@ public class IdSystemNodeUIController
 	void unfold()
 	{
 		JBUI.getMainController().mFXTreeLayout.unfold(mScreenNode);
+		JBUI.getMainController().mFoldToggleBtn.setText(FOLD_LOCALIZATION_TOKEN);
 		getPath().pseudoClassStateChanged(FOLDED_PSEUDO_CLASS, false);
 		getIdText().pseudoClassStateChanged(FOLDED_PSEUDO_CLASS, false);
 	}
