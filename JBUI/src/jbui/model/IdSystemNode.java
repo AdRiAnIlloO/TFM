@@ -81,9 +81,20 @@ public class IdSystemNode
 			{
 				idElems.remove();
 
-				// Remove child messages already contained in this's
-				otherChild.mMsgElemSequences = otherChild.mMsgElemSequences.subList(0,
-						otherChild.mMsgElemSequences.size() - mMsgElemSequences.size());
+				// Change pointers for unchanged parent-tracked messages in the child's list.
+				// Reuse the parent nodes message string pointers to reduce memory consumption;
+				// the old pointers will be garbage collected.
+				List<MsgElement> updatedParentMsgElemSeqs = otherChild.mMsgElemSequences.subList(
+						otherChild.mMsgElemSequences.size() - mMsgElemSequences.size(),
+						otherChild.mMsgElemSequences.size());
+
+				for (int i = 0; i < updatedParentMsgElemSeqs.size(); i++)
+				{
+					if (updatedParentMsgElemSeqs.get(i).equals(mMsgElemSequences.get(i)))
+					{
+						updatedParentMsgElemSeqs.set(i, mMsgElemSequences.get(i));
+					}
+				}
 
 				// Delegate insertion to my children.
 				// If it succeeds, it means I'm an older ancestor of the child - we stop.

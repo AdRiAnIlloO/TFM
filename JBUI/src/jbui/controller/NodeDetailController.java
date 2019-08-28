@@ -21,6 +21,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import jbui.model.IdSystemNode;
+import jbui.model.IdSystemNode.MsgElement;
 
 public class NodeDetailController // NO_UCD
 {
@@ -50,13 +51,30 @@ public class NodeDetailController // NO_UCD
 		int msgInfoChanSide = LEFT_MSG_INFO_COLUMN_INDEX;
 		boolean isEvenMsgGrup = true;
 		IdSystemNode.MsgElement prevMsgElem = null;
+		IdSystemNode auxModelNode = modelNode;
 
 		do
 		{
-			int curSeqFirstMsgIndex = msgInfoGridPaneList.size();
+			int start = msgInfoGridPaneList.size();
+			int end = start + auxModelNode.mMsgElemSequences.size();
+			Label label = new Label(auxModelNode.unparseIdUnspaced());
+			auxModelNode = auxModelNode.getParent();
+
+			if (auxModelNode != null)
+			{
+				end -= auxModelNode.mMsgElemSequences.size();
+			}
+
+			List<MsgElement> auxSubList = modelNode.mMsgElemSequences.subList(start, end);
+
+			// Build the related node ID indicator
+			label.getStyleClass().add("msgGroupIdLabel");
+			VBox vBox = new VBox(label);
+			vBox.setAlignment(Pos.CENTER);
+			mMsgFlowGridPane.add(vBox, MSGS_GROUPS_ID_COLUMN_INDEX, start, 1, auxSubList.size());
 
 			// Build the message sequences that interact with the communication channel
-			for (IdSystemNode.MsgElement msgElem : modelNode.mMsgElemSequences)
+			for (IdSystemNode.MsgElement msgElem : auxSubList)
 			{
 				GridPane gridPane = new GridPane();
 				Label signatureLabel = new Label(msgElem.mSignature);
@@ -117,11 +135,12 @@ public class NodeDetailController // NO_UCD
 				prevMsgElem = msgElem;
 			}
 
-			if (curSeqFirstMsgIndex > 0)
+			if (start > 0)
 			{
+				// Add alternated background coloring
 				Color color = isEvenMsgGrup ? Color.WHITE : Color.LIGHTGRAY;
 
-				msgInfoGridPaneList.get(curSeqFirstMsgIndex).localToParentTransformProperty()
+				msgInfoGridPaneList.get(start).localToParentTransformProperty()
 						.addListener((observable, oldTransform, newTransform) ->
 						{
 							double startY = newTransform.getTy();
@@ -139,17 +158,9 @@ public class NodeDetailController // NO_UCD
 						});
 			}
 
-			// Build the related node ID indicator
-			Label label = new Label(modelNode.unparseIdUnspaced());
-			label.getStyleClass().add("msgGroupIdLabel");
-			VBox vBox = new VBox(label);
-			vBox.setAlignment(Pos.CENTER);
-			mMsgFlowGridPane.add(vBox, MSGS_GROUPS_ID_COLUMN_INDEX, curSeqFirstMsgIndex, 1,
-					msgInfoGridPaneList.size() - curSeqFirstMsgIndex);
-
 			isEvenMsgGrup = !isEvenMsgGrup;
 		}
-		while ((modelNode = modelNode.getParent()) != null);
+		while (auxModelNode != null);
 	}
 
 	@FXML
