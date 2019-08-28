@@ -58,45 +58,17 @@ public class IdSystemNode
 		}
 	}
 
-	private boolean equals(IdSystemNode node)
-	{
-		boolean localDataEqual = node.mIdElem.equals(mIdElem);
-
-		if (mParent != null)
-		{
-			return (mParent.equals(node) && localDataEqual);
-		}
-
-		return localDataEqual;
-	}
-
-	@Override
-	public boolean equals(Object obj)
-	{
-		if (obj instanceof IdSystemNode)
-		{
-			return equals((IdSystemNode) obj);
-		}
-
-		return false;
-	}
-
 	int getDepth()
 	{
-		if (mParent != null)
-		{
-			return mParent.getDepth() + 1;
-		}
-
 		return 0;
 	}
 
 	public IdSystemNode getParent()
 	{
-		return mParent;
+		return null;
 	}
 
-	boolean insert(IdSystemNode otherChild, Queue<IdElem> idElems)
+	boolean insert(NonRootIdSystemNode otherChild, Queue<IdElem> idElems)
 	{
 		if (idElems.peek().equals(mIdElem))
 		{
@@ -135,13 +107,8 @@ public class IdSystemNode
 		return false;
 	}
 
-	private String unparseId(String separator)
+	protected String unparseId(String separator)
 	{
-		if (mParent != null)
-		{
-			return (mParent.unparseId(separator) + separator + mIdElem.toString());
-		}
-
 		return mIdElem.toString();
 	}
 

@@ -11,7 +11,7 @@ class IdElem
 		mSubNumber = subNumber;
 	}
 
-	public boolean equals(IdElem idElem)
+	boolean equals(IdElem idElem)
 	{
 		return (idElem.mNumber == mNumber && idElem.mSubNumber == mSubNumber);
 	}

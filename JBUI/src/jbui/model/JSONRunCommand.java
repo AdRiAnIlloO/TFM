@@ -74,17 +74,18 @@ class JSONRunCommand extends AnswerableMaudeCommand
 			idElems.add(idElem);
 		}
 
-		IdSystemNode node = new IdSystemNode(idElems.getLast(), jsonIdSystem);
-
 		if (idElems.size() < 2)
 		{
+			IdSystemNode node = new IdSystemNode(idElems.getLast(), jsonIdSystem);
 			assert (JBUI.getMaudeThinker().mRootIdSystemNode == null);
 			JBUI.getMaudeThinker().mRootIdSystemNode = node;
 			node.mUIController = JBUI.getMainController().createFXTreeLayout(node);
-			return;
 		}
-
-		JBUI.getMaudeThinker().mRootIdSystemNode.insert(node, idElems);
+		else
+		{
+			NonRootIdSystemNode node = new NonRootIdSystemNode(idElems.getLast(), jsonIdSystem);
+			JBUI.getMaudeThinker().mRootIdSystemNode.insert(node, idElems);
+		}
 	}
 
 	@Override
