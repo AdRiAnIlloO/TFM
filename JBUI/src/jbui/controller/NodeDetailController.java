@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+import javafx.css.PseudoClass;
 import javafx.fxml.FXML;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
@@ -21,10 +22,11 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import jbui.model.IdSystemNode;
-import jbui.model.IdSystemNode.MsgElement;
 
 public class NodeDetailController // NO_UCD
 {
+	private static final PseudoClass INTRUDER_LEARNED_STATE_PSEUDO_CLASS = PseudoClass
+			.getPseudoClass("intruderLearned");
 	private static int LEFT_MSG_INFO_COLUMN_INDEX = 0;
 
 	// Workarounds observed GridPane dynamic row height reduction inability
@@ -57,25 +59,23 @@ public class NodeDetailController // NO_UCD
 		{
 			int start = msgInfoGridPaneList.size();
 			int end = start + auxModelNode.mMsgElemSequences.size();
-			Label label = new Label(auxModelNode.unparseIdUnspaced());
-			auxModelNode = auxModelNode.getParent();
 
-			if (auxModelNode != null)
+			if (auxModelNode.getParent() != null)
 			{
-				end -= auxModelNode.mMsgElemSequences.size();
+				end -= auxModelNode.getParent().mMsgElemSequences.size();
 			}
 
-			List<MsgElement> auxSubList = modelNode.mMsgElemSequences.subList(start, end);
-
 			// Build the related node ID indicator
+			Label label = new Label(auxModelNode.unparseIdUnspaced());
 			label.getStyleClass().add("msgGroupIdLabel");
 			VBox vBox = new VBox(label);
 			vBox.setAlignment(Pos.CENTER);
-			mMsgFlowGridPane.add(vBox, MSGS_GROUPS_ID_COLUMN_INDEX, start, 1, auxSubList.size());
+			mMsgFlowGridPane.add(vBox, MSGS_GROUPS_ID_COLUMN_INDEX, start, 1, end - start);
 
 			// Build the message sequences that interact with the communication channel
-			for (IdSystemNode.MsgElement msgElem : auxSubList)
+			for (int i = start, localAuxNodeIndex = 0; i < end; i++, localAuxNodeIndex++)
 			{
+				IdSystemNode.MsgElement msgElem = modelNode.mMsgElemSequences.get(i);
 				GridPane gridPane = new GridPane();
 				Label signatureLabel = new Label(msgElem.mSignature);
 				signatureLabel.getStyleClass().add("signatureLabel");
@@ -86,6 +86,12 @@ public class NodeDetailController // NO_UCD
 				GridPane.setValignment(msgLabel, VPos.CENTER);
 				gridPane.add(msgLabel, 1, 1);
 				ImageView image;
+
+				// Highlight the message if learned by intruder in the current state
+				if (auxModelNode.mMsgElemSequences.get(localAuxNodeIndex).mIsInSelfIntruderKnowledge)
+				{
+					msgLabel.pseudoClassStateChanged(INTRUDER_LEARNED_STATE_PSEUDO_CLASS, true);
+				}
 
 				// Check if we must use default sides for the message info box.
 				// When the previous message has same signature than current, it means both
@@ -160,7 +166,7 @@ public class NodeDetailController // NO_UCD
 
 			isEvenMsgGrup = !isEvenMsgGrup;
 		}
-		while (auxModelNode != null);
+		while ((auxModelNode = auxModelNode.getParent()) != null);
 	}
 
 	@FXML

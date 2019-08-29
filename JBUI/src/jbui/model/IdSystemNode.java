@@ -15,6 +15,7 @@ public class IdSystemNode
 {
 	public class MsgElement
 	{
+		public final boolean mIsInSelfIntruderKnowledge;
 		public final boolean mIsSend;
 		public final String mMsg;
 		public final String mSignature;
@@ -24,6 +25,7 @@ public class IdSystemNode
 			mIsSend = jsonMsgElem.getBoolean("isSend");
 			mMsg = jsonMsgElem.getString("msg");
 			mSignature = jsonMsgElem.getString("signature");
+			mIsInSelfIntruderKnowledge = jsonMsgElem.getBoolean("isInIntruderK");
 		}
 	}
 

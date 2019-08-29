@@ -17,7 +17,7 @@ mod MAUDE-NPA-JSON is
 	var idSysSetOrErr : IdSystemSet-or-Error .
 	var intruderK : IntruderKnowledge .
 	var lazyLearnt : LazyLearnt .
-	var msgVar : Msg .
+	vars msgA msgB : Msg .
 	var n : Nat .
 	var props : Properties .
 	vars sMsgA sMsgB : SMsg .
@@ -27,19 +27,20 @@ mod MAUDE-NPA-JSON is
 	var sRMsgList : SMsgList-R$ .
 	vars strandA strandB : Strand$ .
 	var strandSet : StrandSet$ .
+	var str : String .
 	var sys : System .
 	var t : Term .
-	
+
 	--- Includes quotes to achieve the additional text indirection
 	op unparseTerm : Term -> String .
 	eq unparseTerm(t) = "\"" + qidList2string(metaPrettyPrint(['MAUDE-NPA], t, none)) + "\"" .
-	
+
 	--- Tells whether a System Message is contained within the present conversation-known messages list
 	op isSMsgInRMsgList : SMsg SMsgList-R$ -> Bool .
 	eq isSMsgInRMsgList(sMsgA, nil) = false .
 	eq isSMsgInRMsgList(sMsgA, (sMsgA, sRMsgList)) = true .
 	eq isSMsgInRMsgList(sMsgA, (sMsgB, sRMsgList)) = isSMsgInRMsgList(sMsgA, sRMsgList) [owise] .
-	
+
 	--- Finds the signature of unique symbols used to mark search states as unable to reach initial states
 	op findMsgSignature : SMsg StrandSet$ -> String .
 	eq findMsgSignature(sMsgA, empty) = "Unknown" .
@@ -47,24 +48,33 @@ mod MAUDE-NPA-JSON is
 		if isSMsgInRMsgList(sMsgA, sRMsgList)
 		then
 			if (freshSet == nil)
-			then "nil"
+			then "\"nil\""
 			else unparseTerm(upTerm(freshSet))
 			fi
 		else findMsgSignature(sMsgA, strandSet)
 		fi [owise] .
-	
-	op unparseMsgSeqList : StrandSet$ SMsgList -> String .
-	eq unparseMsgSeqList(strandSet, +(msgVar)) = "{ \"isSend\": true, \"msg\": " + unparseTerm(upTerm(msgVar)) + ", \"signature\": " + findMsgSignature(+(msgVar), strandSet) + " }" .
-	eq unparseMsgSeqList(strandSet, -(msgVar)) = "{ \"isSend\": false, \"msg\": " + unparseTerm(upTerm(msgVar)) + ", \"signature\": " + findMsgSignature(-(msgVar), strandSet) + " }" .
-	eq unparseMsgSeqList(strandSet, lazyLearnt) = "" . 
-	eq unparseMsgSeqList(strandSet, sMsgElem, sMsgList) = unparseMsgSeqList(strandSet, sMsgElem) + ", " + unparseMsgSeqList(strandSet, sMsgList) [owise] .
-	
+
+	--- Returns "true" iff Msg is contained in IntruderKnowledge, but only among the self state's knowledge ('inI' tag)
+	op stringifyIsInIntruderK : Msg IntruderKnowledge -> String .
+	eq stringifyIsInIntruderK(msgA, empty) = "false" .
+	eq stringifyIsInIntruderK(msgA, msgB inI, intruderK) = if (msgA == msgB) then "true" else stringifyIsInIntruderK(msgA, intruderK) fi .
+	eq stringifyIsInIntruderK(msgA, msgB !inI, intruderK) = stringifyIsInIntruderK(msgA, intruderK) .
+
+	--- Fixes incorrect format caused by empty intruder data in NSPK state [1 . 5 . 2 . 7 . 2 . 4 . 2] (bug?)
+	eq stringifyIsInIntruderK(msgA, intruderK) = "false" [owise] .
+
+	op unparseMsgSeqList : StrandSet$ IntruderKnowledge SMsgList -> String .
+	eq unparseMsgSeqList(strandSet, intruderK, +(msgA)) = "{ \"isSend\": true, \"msg\": " + unparseTerm(upTerm(msgA)) + ", \"signature\": " + findMsgSignature(+(msgA), strandSet) + ", \"isInIntruderK\": " + stringifyIsInIntruderK(msgA, removeIrr(msgA, intruderK)) + " }" .
+	eq unparseMsgSeqList(strandSet, intruderK, -(msgA)) = "{ \"isSend\": false, \"msg\": " + unparseTerm(upTerm(msgA)) + ", \"signature\": " + findMsgSignature(-(msgA), strandSet) + ", \"isInIntruderK\": " + stringifyIsInIntruderK(msgA, removeIrr(msgA, intruderK)) + " }" .
+	eq unparseMsgSeqList(strandSet, intruderK, lazyLearnt) = "" . 
+	eq unparseMsgSeqList(strandSet, intruderK, sMsgElem, sMsgList) = unparseMsgSeqList(strandSet, intruderK, sMsgElem) + ", " + unparseMsgSeqList(strandSet, intruderK, sMsgList) [owise] .
+
 	--- Given a System, returns a JSON representation
 	op unparseSystem : System -> String .
 	eq unparseSystem(strandSet || intruderK || sMsgList || ghostList || props) =
 		"{ \"strandSet\": " + unparseTerm(upTerm(strandSet))
 		+ ", \"intruderKnowledge\": " + unparseTerm(upTerm(intruderK))
-		+ ", \"msgSeqList\": [" + unparseMsgSeqList(strandSet, sMsgList)
+		+ ", \"msgSeqList\": [" + unparseMsgSeqList(strandSet, intruderK, sMsgList)
 		+ "], \"ghostList\": " + (if ghostList =/= nil then unparseTerm(upTerm(ghostList)) else "null" fi)
 		+ ", \"props\": " + (if props =/= nil then unparseTerm(upTerm(props)) else "null" fi) + " }" .
 
@@ -88,17 +98,17 @@ mod MAUDE-NPA-JSON is
 	op toJSON : IdSystemSet-or-Error -> String .
 	eq toJSON(idSysSet) = "[" + unparseISS(idSysSet) + "]" .
 	eq toJSON(idSysSetOrErr) = "[]" [owise] .
-	
+
 	op runJSON[_]`(_`, _`) : Id-SMsgList Nat Bound -> String .
 	eq runJSON[id:Id-SMsgList](n, bound) = toJSON(debug[id:Id-SMsgList](n, bound)) .
 
 	--- A simple convenience wrapper to toJSON
 	op runJSON : Nat Bound -> String .
 	eq runJSON(n, bound) = runJSON[1](n, bound) .
-	
+
 	op countAttackStatesFrom : Nat -> Nat .
 	eq countAttackStatesFrom(n) = if extractAttack(n) :: Attack then 1 + countAttackStatesFrom(n + 1) else 0 fi .
-	
+
 	--- Counts the number of current protocol's attack states (start of backwards search)
 	op countAttackStates : -> Nat .
 	eq countAttackStates = countAttackStatesFrom(0) .

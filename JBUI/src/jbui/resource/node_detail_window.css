@@ -27,6 +27,11 @@
 	-fx-font-size: 16px;
 }
 
+.msgLabel:intruderLearned
+{
+	-fx-text-fill: red;
+}
+
 #channelSeparator
 {
 	-fx-border-radius: 3px;
