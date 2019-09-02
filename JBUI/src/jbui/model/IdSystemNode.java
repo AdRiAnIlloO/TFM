@@ -35,28 +35,74 @@ public class IdSystemNode
 		Default, Initial
 	}
 
+	public class Strand
+	{
+		public final List<String> mKnownSMsgs = new ArrayList<>();
+		public final String mSignature;
+		public final List<String> mUnknownSMsgs = new ArrayList<>();
+
+		private Strand(JSONObject jsonStrandObj) throws JSONException
+		{
+			mSignature = jsonStrandObj.getString("signature");
+			JSONArray knownSMsgsJSONArray = jsonStrandObj.getJSONArray("knownSMsgs");
+			JSONArray unknownSMsgsJSONArray = jsonStrandObj.getJSONArray("unknownSMsgs");
+
+			for (int i = 0; i < knownSMsgsJSONArray.length(); i++)
+			{
+				mKnownSMsgs.add(knownSMsgsJSONArray.getString(i));
+			}
+
+			for (int i = 0; i < unknownSMsgsJSONArray.length(); i++)
+			{
+				mUnknownSMsgs.add(unknownSMsgsJSONArray.getString(i));
+			}
+		}
+	}
+
 	// Used to advance from the last global tree depth
 	static int sMaxTreeDepth;
 
-	private List<IdSystemNode> mChildren;
+	private List<IdSystemNode> mChildren = new ArrayList<>();
+	public final List<String> mGhosts = new ArrayList<>();
 	private IdElem mIdElem;
-	public List<MsgElement> mMsgElemSequences;
-	private IdSystemNode mParent;
+	public final List<String> mIntruderKnowledge = new ArrayList<>();
+	public List<MsgElement> mMsgElemSequences = new ArrayList<>();
+	public final String mPropertiesText;
 	public final StateType mStateType;
+	public final List<Strand> mStrands = new ArrayList<>();
 	IdSystemNodeUIController mUIController;
 
 	IdSystemNode(IdElem idElem, JSONObject jsonIdSystem) throws JSONException
 	{
 		mStateType = (jsonIdSystem.getBoolean("isInitial") ? StateType.Initial : StateType.Default);
 		mIdElem = idElem;
-		mChildren = new ArrayList<>();
-		JSONArray jsonMsgElemSeq = jsonIdSystem.getJSONObject("system").getJSONArray("msgSeqList");
-		mMsgElemSequences = new ArrayList<>();
+		JSONObject jsonSystem = jsonIdSystem.getJSONObject("system");
+		JSONArray jsonStrandsArray = jsonSystem.getJSONArray("strandSet");
+		JSONArray jsonIntruderKnowledgeArray = jsonSystem.getJSONArray("intruderKnowledge");
+		JSONArray jsonMsgElemSeq = jsonSystem.getJSONArray("msgSeqList");
+		JSONArray jsonGhostsArray = jsonSystem.getJSONArray("ghostList");
+		mPropertiesText = jsonSystem.optString("props", null);
+
+		for (int i = 0; i < jsonStrandsArray.length(); i++)
+		{
+			Strand strand = new Strand(jsonStrandsArray.getJSONObject(i));
+			mStrands.add(strand);
+		}
+
+		for (int i = 0; i < jsonIntruderKnowledgeArray.length(); i++)
+		{
+			mIntruderKnowledge.add(jsonIntruderKnowledgeArray.getString(i));
+		}
 
 		for (int i = 0; i < jsonMsgElemSeq.length(); i++)
 		{
 			MsgElement msgElem = new MsgElement(jsonMsgElemSeq.getJSONObject(i));
 			mMsgElemSequences.add(msgElem);
+		}
+
+		for (int i = 0; i < jsonGhostsArray.length(); i++)
+		{
+			mGhosts.add(jsonGhostsArray.getString(i));
 		}
 	}
 

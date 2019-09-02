@@ -8,6 +8,7 @@ mod MAUDE-NPA-JSON is
 					   System
 	***)
 	var bound : Bound .
+	var ghost : Ghost .
 	var ghostList : GhostList .
 	var freshSet : FreshSet .
 	var id : Id .
@@ -15,6 +16,7 @@ mod MAUDE-NPA-JSON is
 	var idSys : IdSystem .
 	var idSysSet : IdSystemSet .
 	var idSysSetOrErr : IdSystemSet-or-Error .
+	var intKElem : IntruderKnowledgeElem .
 	var intruderK : IntruderKnowledge .
 	var lazyLearnt : LazyLearnt .
 	vars msgA msgB : Msg .
@@ -22,7 +24,7 @@ mod MAUDE-NPA-JSON is
 	var props : Properties .
 	vars sMsgA sMsgB : SMsg .
 	var sMsgElem : SMsgElem .
-	var sMsgList : SMsgList .
+	var sMsgList : SMsgList$ .
 	var sLMsgList : SMsgList-L$ .
 	var sRMsgList : SMsgList-R$ .
 	vars strandA strandB : Strand$ .
@@ -34,6 +36,29 @@ mod MAUDE-NPA-JSON is
 	--- Includes quotes to achieve the additional text indirection
 	op unparseTerm : Term -> String .
 	eq unparseTerm(t) = "\"" + qidList2string(metaPrettyPrint(['MAUDE-NPA], t, none)) + "\"" .
+
+	op unparseSMsgList : SMsgList -> String .
+	eq unparseSMsgList(nil) = "" .
+	eq unparseSMsgList(sMsgA, sMsgList) = unparseTerm(upTerm(sMsgA))
+		+ (if (sMsgList =/= nil) then ", " else "" fi) + unparseSMsgList(sMsgList) [owise] .
+
+	op unparseStrandSet : StrandSet$ -> String .
+	eq unparseStrandSet(empty) = "" .
+	eq unparseStrandSet((:: freshSet :: [sLMsgList | sRMsgList]) & strandSet) =
+		"{ \"signature\": " + unparseTerm(upTerm(freshSet))
+		+ ", \"knownSMsgs\": [" + unparseSMsgList(toSMsgList(sLMsgList))
+		+ "], \"unknownSMsgs\": [" + unparseSMsgList(toSMsgList(sRMsgList)) + "] }"
+		+ (if (strandSet =/= empty) then ", " else "" fi) + unparseStrandSet(strandSet) [owise] .
+
+	op unparseIntruderKnowledge : IntruderKnowledge -> String .
+	eq unparseIntruderKnowledge(empty) = "" .
+	eq unparseIntruderKnowledge(intKElem, intruderK) = unparseTerm(upTerm(intKElem))
+		+ (if (intruderK =/= empty) then ", " else "" fi) + unparseIntruderKnowledge(intruderK) [owise] .
+
+	op unparseGhostList : GhostList -> String .
+	eq unparseGhostList(nil) = "" .
+	eq unparseGhostList(ghost, ghostList) = unparseTerm(upTerm(ghost))
+		+ (if (ghostList =/= nil) then ", " else "" fi) + unparseGhostList(ghostList) [owise] .
 
 	--- Tells whether a System Message is contained within the present conversation-known messages list
 	op isSMsgInRMsgList : SMsg SMsgList-R$ -> Bool .
@@ -72,11 +97,11 @@ mod MAUDE-NPA-JSON is
 	--- Given a System, returns a JSON representation
 	op unparseSystem : System -> String .
 	eq unparseSystem(strandSet || intruderK || sMsgList || ghostList || props) =
-		"{ \"strandSet\": " + unparseTerm(upTerm(strandSet))
-		+ ", \"intruderKnowledge\": " + unparseTerm(upTerm(intruderK))
-		+ ", \"msgSeqList\": [" + unparseMsgSeqList(strandSet, intruderK, sMsgList)
-		+ "], \"ghostList\": " + (if ghostList =/= nil then unparseTerm(upTerm(ghostList)) else "null" fi)
-		+ ", \"props\": " + (if props =/= nil then unparseTerm(upTerm(props)) else "null" fi) + " }" .
+		"{ \"strandSet\": [" + unparseStrandSet(strandSet)
+		+ "], \"intruderKnowledge\": [" + unparseIntruderKnowledge(intruderK)
+		+ "], \"msgSeqList\": [" + unparseMsgSeqList(strandSet, intruderK, sMsgList)
+		+ "], \"ghostList\": [" + unparseGhostList(ghostList)
+		+ "], \"props\": " + (if (props =/= nil) then unparseTerm(upTerm(props)) else "null" fi) + " }" .
 
 	--- Given an Id, returns a JSON representation.
 	--- Each JSON object contains a main identifier (key "elem") and, if present, an internal sub-identifier (key "subElem").

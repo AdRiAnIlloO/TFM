@@ -2,22 +2,31 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.control.TreeView?>
+<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
-<TabPane minHeight="200.0" minWidth="400.0"
+<TabPane maxHeight="600.0"
 	stylesheets="@../resource/node_detail_window.css"
 	tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8.0.171"
 	xmlns:fx="http://javafx.com/fxml/1"
 	fx:controller="jbui.controller.NodeDetailController">
 	<tabs>
-		<Tab text="Message flow">
+		<Tab closable="false" text="Message flow">
 			<content>
 				<ScrollPane id="msgFlowScrollPane"
 					fx:id="mMsgFlowScrollPane" pannable="true">
@@ -67,6 +76,54 @@
 						<Cursor fx:constant="OPEN_HAND" />
 					</cursor>
 				</ScrollPane>
+			</content>
+		</Tab>
+		<Tab closable="false" text="Full information">
+			<content>
+				<AnchorPane>
+					<children>
+						<TreeView id="fullInfoTreeView" fx:id="mFullInfoTreeView"
+							AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+							AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+					</children>
+				</AnchorPane>
+			</content>
+		</Tab>
+		<Tab closable="false" text="Notes">
+			<content>
+				<VBox>
+					<children>
+						<ToolBar>
+							<items>
+								<Button defaultButton="true" disable="true"
+									mnemonicParsing="false" text="Save">
+									<font>
+										<Font size="13.0" />
+									</font>
+								</Button>
+								<CheckBox disable="true" text="Autosave"
+									translateX="10.0">
+									<font>
+										<Font size="13.0" />
+									</font>
+								</CheckBox>
+							</items>
+						</ToolBar>
+						<TextArea VBox.vgrow="ALWAYS">
+							<font>
+								<Font name="Consolas" size="14.0" />
+							</font>
+						</TextArea>
+						<Label text="No changes detected">
+							<VBox.margin>
+								<Insets left="5.0" />
+							</VBox.margin>
+							<font>
+								<Font size="13.0" />
+							</font>
+						</Label>
+					</children>
+				</VBox>
 			</content>
 		</Tab>
 	</tabs>

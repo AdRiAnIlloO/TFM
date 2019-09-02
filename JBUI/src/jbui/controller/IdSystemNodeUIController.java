@@ -176,8 +176,6 @@ public class IdSystemNodeUIController
 			Scene scene = new Scene(region);
 			stage.setScene(scene);
 			stage.show();
-			stage.setMinWidth(region.getMinWidth());
-			stage.setMinHeight(region.getMinHeight());
 		}
 		catch (IOException e)
 		{

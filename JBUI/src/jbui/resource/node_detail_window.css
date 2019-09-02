@@ -49,3 +49,16 @@
 	-fx-text-fill: white;
 	-fx-background-color: purple;
 }
+
+#fullInfoTreeView .tree-cell
+{
+	-fx-font-size: 14px;
+	-fx-font-weight: bold;
+}
+
+/* Note properties are inherited from parent tree items as well, thus we need to revert some e.g. font weight */
+#fullInfoTreeView .tree-cell:leaf
+{
+	-fx-font-size: 13px;
+	-fx-font-weight: normal;
+}
