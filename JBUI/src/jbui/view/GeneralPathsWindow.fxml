@@ -14,9 +14,10 @@
 	xmlns:fx="http://javafx.com/fxml/1"
 	fx:controller="jbui.controller.GeneralPathsController">
 	<columnConstraints>
-		<ColumnConstraints prefWidth="225.0" />
-		<ColumnConstraints prefWidth="225.0" />
-		<ColumnConstraints prefWidth="100.0" />
+		<ColumnConstraints />
+		<ColumnConstraints prefWidth="250.0" />
+		<ColumnConstraints halignment="CENTER"
+			hgrow="ALWAYS" />
 	</columnConstraints>
 	<rowConstraints>
 		<RowConstraints prefHeight="40.0" vgrow="SOMETIMES" />
@@ -73,17 +74,22 @@
 			</GridPane.margin>
 		</Button>
 		<Label fx:id="mMaudeBinStatus" text="Missing" textFill="RED"
-			GridPane.columnIndex="2" GridPane.halignment="CENTER">
+			GridPane.columnIndex="2">
 			<font>
 				<Font size="14.0" />
 			</font>
+			<GridPane.margin>
+				<Insets left="5.0" right="10.0" />
+			</GridPane.margin>
 		</Label>
 		<Label fx:id="mNPAModuleStatus" text="Missing" textFill="RED"
-			GridPane.columnIndex="2" GridPane.halignment="CENTER"
-			GridPane.rowIndex="1">
+			GridPane.columnIndex="2" GridPane.rowIndex="1">
 			<font>
 				<Font size="14.0" />
 			</font>
+			<GridPane.margin>
+				<Insets left="5.0" right="10.0" />
+			</GridPane.margin>
 		</Label>
 	</children>
 </GridPane>

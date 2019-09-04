@@ -15,13 +15,15 @@
 	xmlns:fx="http://javafx.com/fxml/1"
 	fx:controller="jbui.controller.ProtocolPathController">
 	<columnConstraints>
+		<ColumnConstraints />
+		<ColumnConstraints prefWidth="250.0" />
 		<ColumnConstraints halignment="CENTER"
-			prefWidth="225.0" />
-		<ColumnConstraints prefWidth="200.0" />
-		<ColumnConstraints prefWidth="100.0" />
+			hgrow="ALWAYS" />
 	</columnConstraints>
 	<rowConstraints>
 		<RowConstraints prefHeight="40.0" vgrow="SOMETIMES" />
+		<RowConstraints minHeight="10.0" prefHeight="40.0"
+			vgrow="SOMETIMES" />
 	</rowConstraints>
 	<children>
 		<TextField fx:id="mProtocolModulePath" disable="true"
@@ -48,10 +50,14 @@
 			</GridPane.margin>
 		</Button>
 		<Label fx:id="mProtocolModuleStatus" text="Missing"
-			textFill="RED" GridPane.columnIndex="2" GridPane.halignment="CENTER">
+			textFill="RED" GridPane.columnIndex="2">
 			<font>
 				<Font size="14.0" />
 			</font>
+			<GridPane.margin>
+				<Insets left="5.0" right="10.0" />
+			</GridPane.margin>
+		</Label>
 		</Label>
 	</children>
 </GridPane>
