@@ -145,11 +145,10 @@ public abstract class LoadablesController
 	 * @return If final updatedFiles valid, its parent directory. Otherwise,
 	 *         lastConfirmedDirectory
 	 */
-	File handlePathDialogResult(TextField textField, File updatedFile, File lastConfirmedDirectory)
+	File handlePathDialogResult(TextField textField, File updatedFile)
 	{
 		textField.setText(updatedFile.getAbsolutePath());
-		lastConfirmedDirectory = updatedFile.getParentFile();
-		return lastConfirmedDirectory;
+		return updatedFile.getParentFile();
 	}
 
 	abstract void postInitialize();
@@ -165,10 +164,10 @@ public abstract class LoadablesController
 		mDialogPane.lookupButton(ButtonType.OK).setDisable(disable);
 	}
 
-	File showMaudePathDialog(File lastConfirmedDirectory)
+	File showMaudePathLoadDialog(File lastConfirmedDirectory)
 	{
 		ExtensionFilter filter = new ExtensionFilter("Maude files", "*.maude");
-		return showPathDialog(filter, lastConfirmedDirectory);
+		return showPathLoadDialog(filter, lastConfirmedDirectory);
 	}
 
 	/**
@@ -180,7 +179,7 @@ public abstract class LoadablesController
 	 *                               previous search dialogs
 	 * @return Final choosen file
 	 */
-	File showPathDialog(ExtensionFilter filter, File lastConfirmedDirectory)
+	File showPathLoadDialog(ExtensionFilter filter, File lastConfirmedDirectory)
 	{
 		FileChooser chooser = new FileChooser();
 		chooser.setInitialDirectory(lastConfirmedDirectory);

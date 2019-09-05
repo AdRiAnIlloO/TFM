@@ -10,8 +10,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Font?>
 
-<GridPane maxHeight="-Infinity" maxWidth="-Infinity"
-	xmlns="http://javafx.com/javafx/8.0.171"
+<GridPane xmlns="http://javafx.com/javafx/8.0.171"
 	xmlns:fx="http://javafx.com/fxml/1"
 	fx:controller="jbui.controller.ProtocolPathController">
 	<columnConstraints>
@@ -58,6 +57,34 @@
 				<Insets left="5.0" right="10.0" />
 			</GridPane.margin>
 		</Label>
+		<Button maxWidth="1.7976931348623157E308"
+			mnemonicParsing="false" onAction="#onTreePathPickBtnClick"
+			text="Restore saved protocol..." GridPane.rowIndex="1">
+			<font>
+				<Font size="14.0" />
+			</font>
+			<GridPane.margin>
+				<Insets left="10.0" right="5.0" />
+			</GridPane.margin>
+		</Button>
+		<TextField fx:id="mTreeLoadFilePath" disable="true"
+			editable="false" promptText="(Optional)" GridPane.columnIndex="1"
+			GridPane.rowIndex="1">
+			<font>
+				<Font size="14.0" />
+			</font>
+			<GridPane.margin>
+				<Insets left="5.0" right="5.0" />
+			</GridPane.margin>
+		</TextField>
+		<Label fx:id="mTreeLoadFileStatus" GridPane.columnIndex="2"
+			GridPane.rowIndex="1">
+			<GridPane.margin>
+				<Insets left="5.0" right="10.0" />
+			</GridPane.margin>
+			<font>
+				<Font size="14.0" />
+			</font>
 		</Label>
 	</children>
 </GridPane>

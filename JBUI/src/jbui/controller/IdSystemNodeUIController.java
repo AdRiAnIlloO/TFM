@@ -30,7 +30,7 @@ public class IdSystemNodeUIController
 	private static final String UNFOLD_LOCALIZATION_TOKEN = "Unfold";
 
 	private IdSystemNode mModelNode;
-	final OvalTextNode mScreenNode;
+	public final OvalTextNode mScreenNode;
 
 	IdSystemNodeUIController(IdSystemNode modelNode)
 	{
@@ -65,10 +65,13 @@ public class IdSystemNodeUIController
 				if (mScreenNode.isFolded())
 				{
 					unfold();
-					return;
+				}
+				else
+				{
+					fold();
 				}
 
-				fold();
+				JBUI.getMainController().tryAutoSaveCurrentProtocol();
 			});
 
 			inputDepthSearchItem.setOnAction(actionEvent -> promptSearchDepthDialog());
@@ -78,7 +81,7 @@ public class IdSystemNodeUIController
 		contextMenu.show(getPath().getScene().getWindow(), event.getScreenX(), event.getScreenY());
 	}
 
-	void fold()
+	public void fold()
 	{
 		JBUI.getMainController().mFXTreeLayout.fold(mScreenNode);
 		JBUI.getMainController().mFoldToggleBtn.setText(UNFOLD_LOCALIZATION_TOKEN);

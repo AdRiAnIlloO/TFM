@@ -20,7 +20,7 @@ public class GeneralPathsController extends LoadablesController
 		MaudeBin, NPA
 	}
 
-	// Last directories upon file search dialog close
+	// Last directories upon file search dialog closes
 	private File mLastMaudeBinDir;
 	private File mLastNPAModuleDir;
 
@@ -149,11 +149,11 @@ public class GeneralPathsController extends LoadablesController
 	@FXML
 	private void onMaudeBinPathSearchBtnClick(ActionEvent event)
 	{
-		File maudeBinFile = showPathDialog(null, mLastMaudeBinDir);
+		File maudeBinFile = showPathLoadDialog(null, mLastMaudeBinDir);
 
 		if (maudeBinFile != null)
 		{
-			mLastMaudeBinDir = handlePathDialogResult(mMaudeBinPath, maudeBinFile, mLastMaudeBinDir);
+			mLastMaudeBinDir = handlePathDialogResult(mMaudeBinPath, maudeBinFile);
 			mMaudeBinFile = maudeBinFile;
 			handleMaudeBinPathChange(mMaudeBinFile.getAbsolutePath(), mMaudeBinFile);
 		}
@@ -162,11 +162,11 @@ public class GeneralPathsController extends LoadablesController
 	@FXML
 	private void onNPAModulePathSearchBtnClick(ActionEvent event)
 	{
-		File npaModuleFile = showMaudePathDialog(mLastNPAModuleDir);
+		File npaModuleFile = showMaudePathLoadDialog(mLastNPAModuleDir);
 
 		if (npaModuleFile != null)
 		{
-			mLastNPAModuleDir = handlePathDialogResult(mNPAModulePath, npaModuleFile, mLastNPAModuleDir);
+			mLastNPAModuleDir = handlePathDialogResult(mNPAModulePath, npaModuleFile);
 			mNPAModuleFile = npaModuleFile;
 			handleNPAModulePathChange();
 		}

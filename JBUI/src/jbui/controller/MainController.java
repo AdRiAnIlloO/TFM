@@ -1,19 +1,24 @@
 package jbui.controller;
 
+import java.io.File;
 import java.io.IOException;
+
+import org.json.JSONException;
 
 import fxtreelayout.FXTreeLayout;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.Pane;
 import jbui.JBUI;
 import jbui.model.IdSystemNode;
+import jbui.persistence.MainControllerJSONTreeSaveDAO;
 
-public class MainController
+public class MainController extends JSONTreeExportController
 {
 	private static int GAP_BETWEEN_LEVELS = 40;
 	private static int GAP_BETWEEN_NODES = 20;
@@ -32,7 +37,7 @@ public class MainController
 	@FXML
 	private ScrollPane mScrollPane;
 
-	private IdSystemNodeUIController mSelectedNodeController;
+	public IdSystemNodeUIController mSelectedNodeController;
 
 	/**
 	 * These contribute to keeping the position of the selected node relative to the
@@ -52,7 +57,16 @@ public class MainController
 	Button mSingleStepBtn;
 
 	@FXML
+	private CheckMenuItem mTreeAutoSaveCheckItem;
+
+	@FXML
+	public MenuItem mTreeExportItem;
+
+	@FXML
 	private Pane mTreePane;
+
+	@FXML
+	private MenuItem mTreeQuickSaveItem;
 
 	private void centerTreeLayoutHorizontally(double scrollPaneWidth, double treePaneWidth)
 	{
@@ -78,6 +92,14 @@ public class MainController
 		mFXTreeLayout = new FXTreeLayout(mScrollPane, mTreePane, root.mScreenNode, GAP_BETWEEN_LEVELS,
 				GAP_BETWEEN_NODES);
 		return root;
+	}
+
+	@Override
+	void disableProtocolSaving()
+	{
+		super.disableProtocolSaving();
+		mProtocolSaveFile = null;
+		mTreeQuickSaveItem.setDisable(true);
 	}
 
 	@FXML
@@ -135,15 +157,6 @@ public class MainController
 
 		// Pick a better cursor for panning
 		ControllerUtil.setPanningHandScrollPaneCursors(mScrollPane);
-//		mScrollPane.setOnMousePressed(event ->
-//		{
-//			event.setDragDetect(true);
-//		});
-//
-//		mScrollPane.setOnDragDetected(event ->
-//		{
-//			mScrollPane.setCursor(Cursor.CLOSED_HAND);
-//		});
 
 		mProtocolLaunchBtn.setOnAction(event ->
 		{
@@ -170,11 +183,35 @@ public class MainController
 			{
 				mSelectedNodeController.unfold();
 				mFoldToggleBtn.setText("Fold");
-				return;
+			}
+			else
+			{
+				mSelectedNodeController.fold();
+				mFoldToggleBtn.setText("Unfold");
 			}
 
-			mSelectedNodeController.fold();
-			mFoldToggleBtn.setText("Unfold");
+			tryAutoSaveCurrentProtocol();
+		});
+
+		mTreeQuickSaveItem.setOnAction(actionEvent ->
+		{
+			if (mProtocolSaveFile != null)
+			{
+				saveCurrentProtocol();
+			}
+		});
+
+		mTreeExportItem.setOnAction(actionEvent ->
+		{
+			File treeSaveFile = showJSONSavePathDialog(JBUI.sInstance.mLastTreeSaveDirectory);
+
+			if (treeSaveFile != null)
+			{
+				mProtocolSaveFile = treeSaveFile;
+				JBUI.sInstance.mLastTreeSaveDirectory = treeSaveFile.getParentFile();
+				notifyNewSaveFile(treeSaveFile);
+				saveCurrentProtocol();
+			}
 		});
 
 		// Prompt earlier the general paths controller setup window, for convenience
@@ -193,7 +230,20 @@ public class MainController
 		showConfirmationAlert(GeneralPathsAlert.class);
 	}
 
-	void selectScreenNode(IdSystemNodeUIController node)
+	private void saveCurrentProtocol()
+	{
+		try
+		{
+			handleCurrentProtocolSaveQueued(new MainControllerJSONTreeSaveDAO());
+			mTreeQuickSaveItem.setDisable(true);
+		}
+		catch (JSONException e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	public void selectScreenNode(IdSystemNodeUIController node)
 	{
 		if (mSelectedNodeController == null)
 		{
@@ -214,6 +264,7 @@ public class MainController
 		node.select();
 		updateSelectedNodeMarginX();
 		updateSelectedNodeMarginY();
+		tryAutoSaveCurrentProtocol();
 	}
 
 	private <T extends LoadablesAlert<S>, S extends LoadablesController> void showConfirmationAlert(Class<T> type)
@@ -225,6 +276,20 @@ public class MainController
 		catch (Exception e)
 		{
 			e.printStackTrace();
+		}
+	}
+
+	public void tryAutoSaveCurrentProtocol()
+	{
+		if (mProtocolSaveFile != null)
+		{
+			if (mTreeAutoSaveCheckItem.isSelected())
+			{
+				saveCurrentProtocol();
+				return;
+			}
+
+			mTreeQuickSaveItem.setDisable(false);
 		}
 	}
 

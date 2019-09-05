@@ -41,6 +41,7 @@ public class JBUI extends Application
 		launch(args);
 	}
 
+	public File mLastTreeSaveDirectory;
 	public MainController mMainController;
 	public File mMaudeBinFile; // Maude bin
 	private MaudeThinker mMaudeThinker;

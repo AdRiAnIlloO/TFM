@@ -3,17 +3,21 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.Cursor?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckMenuItem?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.control.ToolBar?>
 <?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane prefHeight="400.0" prefWidth="400.0"
+<BorderPane minWidth="400.0" prefHeight="400.0"
 	stylesheets="@../resource/application.css"
 	xmlns="http://javafx.com/javafx/8.0.171"
 	xmlns:fx="http://javafx.com/fxml/1"
@@ -25,19 +29,21 @@
 					<items>
 						<MenuItem mnemonicParsing="false"
 							onAction="#onMaudePathsBtnClick" text="Set Maude paths..." />
+						<SeparatorMenuItem mnemonicParsing="false" />
+						<MenuItem fx:id="mProtocolLaunchBtn" disable="true"
+							mnemonicParsing="false" text="Launch new protocol..." />
+						<MenuItem fx:id="mTreeQuickSaveItem" disable="true"
+							mnemonicParsing="false" text="Save" />
+						<MenuItem fx:id="mTreeExportItem" disable="true"
+							mnemonicParsing="false" text="Export active protocol..." />
 						<MenuItem mnemonicParsing="false"
 							onAction="#onExitBtnClick" text="Exit" />
 					</items>
 				</Menu>
-				<Menu mnemonicParsing="false" text="Launch">
+				<Menu mnemonicParsing="false" text="Edit">
 					<items>
-						<MenuItem fx:id="mProtocolLaunchBtn" disable="true"
-							mnemonicParsing="false" text="New Protocol..." />
-					</items>
-				</Menu>
-				<Menu disable="true" mnemonicParsing="false" text="Edit">
-					<items>
-						<MenuItem mnemonicParsing="false" text="Delete" />
+						<CheckMenuItem fx:id="mTreeAutoSaveCheckItem"
+							mnemonicParsing="false" text="Enable protocol autosave" />
 					</items>
 				</Menu>
 				<Menu disable="true" mnemonicParsing="false" text="Help">
@@ -92,4 +98,19 @@
 			</children>
 		</VBox>
 	</center>
+	<bottom>
+		<ToolBar>
+			<items>
+				<Label fx:id="mProtocolSaveStatus"
+					text="No changes detected, or saving is not available" />
+				<Separator orientation="VERTICAL">
+					<padding>
+						<Insets left="10.0" right="10.0" />
+					</padding>
+				</Separator>
+				<Label fx:id="mProtocolSaveFileReminder"
+					text="(No export file specified)" />
+			</items>
+		</ToolBar>
+	</bottom>
 </BorderPane>

@@ -1,5 +1,6 @@
 package jbui.model;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -22,6 +23,13 @@ class NonRootIdSystemNode extends IdSystemNode
 	public IdSystemNode getParent()
 	{
 		return mParent;
+	}
+
+	@Override
+	public void outputIdAsJSONArray(JSONArray jsonArray) throws JSONException
+	{
+		mParent.outputIdAsJSONArray(jsonArray);
+		super.outputIdAsJSONArray(jsonArray);
 	}
 
 	@Override

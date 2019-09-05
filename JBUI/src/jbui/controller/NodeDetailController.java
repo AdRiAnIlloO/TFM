@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.json.JSONException;
+
 import javafx.css.PseudoClass;
 import javafx.fxml.FXML;
 import javafx.geometry.HPos;
@@ -12,11 +14,14 @@ import javafx.geometry.Insets;
 import javafx.geometry.NodeOrientation;
 import javafx.geometry.Pos;
 import javafx.geometry.VPos;
+import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SelectionMode;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
@@ -33,9 +38,11 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import jbui.JBUI;
 import jbui.model.IdSystemNode;
+import jbui.persistence.NodeDetailsJSONTreeSaveDAO;
 
-public class NodeDetailController // NO_UCD
+public class NodeDetailController extends JSONTreeExportController // NO_UCD
 {
 	private class SectionStringTreeItem extends TreeItem<String>
 	{
@@ -44,7 +51,6 @@ public class NodeDetailController // NO_UCD
 			super(text);
 			setExpanded(true);
 		}
-
 	}
 
 	private static final PseudoClass INTRUDER_LEARNED_STATE_PSEUDO_CLASS = PseudoClass
@@ -68,6 +74,23 @@ public class NodeDetailController // NO_UCD
 
 	@FXML
 	private StackPane mMsgFlowStackPane;
+
+	@FXML
+	private CheckBox mNotesAutoSaveCheck;
+
+	@FXML
+	private Button mNotesSaveBtn;
+
+	@FXML
+	private TextArea mNotesTextArea;
+
+	public final IdSystemNode mProtocolSaveRootNode;
+
+	public NodeDetailController()
+	{
+		mProtocolSaveRootNode = JBUI.getMaudeThinker().mRootIdSystemNode;
+		mProtocolSaveFile = JBUI.getMainController().mProtocolSaveFile;
+	}
 
 	private void createCopyToClipboardMenu()
 	{
@@ -320,5 +343,56 @@ public class NodeDetailController // NO_UCD
 				copyMenuItem.setOnAction(event -> createCopyToClipboardMenu());
 			}
 		});
+
+		if (mProtocolSaveFile != null)
+		{
+			notifyNewSaveFile(mProtocolSaveFile);
+		}
+
+		mNotesSaveBtn.setOnAction(actionEvent ->
+		{
+			if (mProtocolSaveFile == null)
+			{
+				mProtocolSaveFile = showJSONSavePathDialog(JBUI.sInstance.mLastTreeSaveDirectory);
+
+				if (mProtocolSaveFile == null)
+				{
+					return;
+				}
+			}
+
+			saveCurrentProtocol();
+		});
+
+		mNotesTextArea.setText(mProtocolSaveRootNode.mNotes);
+
+		mNotesTextArea.textProperty().addListener((observable, oldText, newText) ->
+		{
+			mProtocolSaveRootNode.mNotes = newText;
+
+			if (mProtocolSaveFile != null)
+			{
+				if (mNotesAutoSaveCheck.isSelected())
+				{
+					saveCurrentProtocol();
+					return;
+				}
+
+				mNotesSaveBtn.setDisable(false);
+			}
+		});
+	}
+
+	private void saveCurrentProtocol()
+	{
+		try
+		{
+			handleCurrentProtocolSaveQueued(new NodeDetailsJSONTreeSaveDAO(this));
+			mNotesSaveBtn.setDisable(true);
+		}
+		catch (JSONException e)
+		{
+			e.printStackTrace();
+		}
 	}
 }

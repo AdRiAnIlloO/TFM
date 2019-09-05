@@ -11,6 +11,9 @@ import java.io.OutputStreamWriter;
 import java.util.LinkedList;
 import java.util.Queue;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+
 import javafx.animation.AnimationTimer;
 import jbui.JBUI;
 import jbui.persistence.DAOThread;
@@ -47,7 +50,7 @@ public class MaudeThinker extends AnimationTimer
 	// alert when no protocol is launched yet or a new protocol launches
 	public String mNextNPAModuleTextInput;
 
-	IdSystemNode mRootIdSystemNode;
+	public IdSystemNode mRootIdSystemNode;
 	private State mState;
 
 	public MaudeThinker()
@@ -142,7 +145,7 @@ public class MaudeThinker extends AnimationTimer
 		mNextMaudeProcess = maudeProcess;
 	}
 
-	public boolean tryLaunchProtocolNow(File maudeBinFile, String protocolModuleTextInput)
+	public boolean tryLaunchProtocolNow(File maudeBinFile, String protocolModuleTextInput, JSONArray jsonTreeArray)
 	{
 		try
 		{
@@ -150,7 +153,10 @@ public class MaudeThinker extends AnimationTimer
 			{
 				JBUI.getMainController().clearTree(mRootIdSystemNode.mUIController);
 				mRootIdSystemNode = null;
+				JBUI.getMainController().mTreeExportItem.setDisable(true);
 			}
+
+			tryRestoreProtocol(jsonTreeArray);
 
 			// Try mark answerable command as aborted
 			if (mMaudeOutCommand != null)
@@ -172,6 +178,25 @@ public class MaudeThinker extends AnimationTimer
 			e.printStackTrace();
 			mState = State.Initial;
 			return false;
+		}
+	}
+
+	private void tryRestoreProtocol(JSONArray jsonTreeArray)
+	{
+		if (jsonTreeArray != null)
+		{
+			try
+			{
+				for (int i = 0; i < jsonTreeArray.length(); i++)
+				{
+					JSONArray jsonIdSystemArray = jsonTreeArray.getJSONArray(i);
+					IdSystemNode.parseJSONIdSystemArray(jsonIdSystemArray, true);
+				}
+			}
+			catch (JSONException e)
+			{
+				e.printStackTrace();
+			}
 		}
 	}
 

@@ -1,31 +1,30 @@
 package jbui.model;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 class IdElem
 {
-	private int mNumber; // Format: N (without curly braces)
-	private int mSubNumber; // Format: {N}. A value of 0 is treated as if sub-element didn't exist.
+	private final int mNumber; // Format: N (without curly braces)
 
-	IdElem(int number, int subNumber)
+	IdElem(int number)
 	{
 		mNumber = number;
-		mSubNumber = subNumber;
 	}
 
 	boolean equals(IdElem idElem)
 	{
-		return (idElem.mNumber == mNumber && idElem.mSubNumber == mSubNumber);
+		return (idElem.mNumber == mNumber);
+	}
+
+	void outputAsJSONObject(JSONObject jsonId) throws JSONException
+	{
+		jsonId.put("elem", mNumber);
 	}
 
 	@Override
 	public String toString()
 	{
-		String result = String.valueOf(mNumber);
-
-		if (mSubNumber > 0)
-		{
-			result += String.format("{%d}", mSubNumber);
-		}
-
-		return result;
+		return String.valueOf(mNumber);
 	}
 }

@@ -1,6 +1,7 @@
 package jbui.model;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
@@ -64,15 +65,84 @@ public class IdSystemNode
 	// Used to advance from the last global tree depth
 	static int sMaxTreeDepth;
 
-	private List<IdSystemNode> mChildren = new ArrayList<>();
+	static void parseJSONIdSystemArray(JSONArray jsonIdSystemArray, boolean parseUIKeys) throws JSONException
+	{
+		for (int i = 0; i < jsonIdSystemArray.length(); i++)
+		{
+			JSONObject jsonIdSystem = jsonIdSystemArray.getJSONObject(i);
+			JSONArray jsonId = jsonIdSystem.getJSONArray("id");
+			LinkedList<IdElem> idElems = new LinkedList<>();
+			IdSystemNode node;
+
+			for (int j = 0; j < jsonId.length(); j++)
+			{
+				JSONObject jsonIdElem = jsonId.getJSONObject(j);
+				int idElemNum = jsonIdElem.getInt("elem");
+				int subIdElemNum = jsonIdElem.optInt("subElem");
+				IdElem idElem;
+
+				if (subIdElemNum > 0)
+				{
+					idElem = new IdSubElem(idElemNum, subIdElemNum);
+				}
+				else
+				{
+					idElem = new IdElem(idElemNum);
+				}
+
+				idElems.add(idElem);
+			}
+
+			if (idElems.size() < 2)
+			{
+				node = new IdSystemNode(idElems.getLast(), jsonIdSystem);
+
+				// This condition should be true if JSON tree loaded successfully from user file
+				if (JBUI.getMaudeThinker().mRootIdSystemNode != null)
+				{
+					JBUI.getMaudeThinker().mRootIdSystemNode.mMsgElemSequences = node.mMsgElemSequences;
+				}
+				else
+				{
+					JBUI.getMaudeThinker().mRootIdSystemNode = node;
+					node.mUIController = JBUI.getMainController().createFXTreeLayout(node);
+					JBUI.getMainController().mTreeExportItem.setDisable(false);
+				}
+			}
+			else
+			{
+				NonRootIdSystemNode auxNode = new NonRootIdSystemNode(idElems.getLast(), jsonIdSystem);
+				node = auxNode;
+				JBUI.getMaudeThinker().mRootIdSystemNode.insert(auxNode, idElems);
+			}
+
+			if (parseUIKeys)
+			{
+				if (jsonIdSystem.optBoolean("isSelected"))
+				{
+					JBUI.getMainController().selectScreenNode(node.mUIController);
+				}
+
+				if (jsonIdSystem.optBoolean("isFolded"))
+				{
+					node.mUIController.fold();
+				}
+
+				node.mNotes = jsonIdSystem.optString("notes");
+			}
+		}
+	}
+
+	public final List<IdSystemNode> mChildren = new ArrayList<>();
 	public final List<String> mGhosts = new ArrayList<>();
-	private IdElem mIdElem;
+	private final IdElem mIdElem;
 	public final List<String> mIntruderKnowledge = new ArrayList<>();
 	public List<MsgElement> mMsgElemSequences = new ArrayList<>();
+	public String mNotes;
 	public final String mPropertiesText;
 	public final StateType mStateType;
 	public final List<Strand> mStrands = new ArrayList<>();
-	IdSystemNodeUIController mUIController;
+	public IdSystemNodeUIController mUIController;
 
 	IdSystemNode(IdElem idElem, JSONObject jsonIdSystem) throws JSONException
 	{
@@ -118,7 +188,7 @@ public class IdSystemNode
 		return null;
 	}
 
-	boolean insert(NonRootIdSystemNode otherChild, Queue<IdElem> idElems)
+	private boolean insert(NonRootIdSystemNode otherChild, Queue<IdElem> idElems)
 	{
 		if (idElems.peek().equals(mIdElem))
 		{
@@ -166,6 +236,13 @@ public class IdSystemNode
 		}
 
 		return false;
+	}
+
+	public void outputIdAsJSONArray(JSONArray jsonArray) throws JSONException
+	{
+		JSONObject jsonId = new JSONObject();
+		mIdElem.outputAsJSONObject(jsonId);
+		jsonArray.put(jsonId);
 	}
 
 	protected String unparseId(String separator)
