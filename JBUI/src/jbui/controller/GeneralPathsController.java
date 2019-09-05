@@ -149,7 +149,7 @@ public class GeneralPathsController extends LoadablesController
 	@FXML
 	private void onMaudeBinPathSearchBtnClick(ActionEvent event)
 	{
-		File maudeBinFile = showPathDialog(mMaudeBinPath, null, mLastMaudeBinDir);
+		File maudeBinFile = showPathDialog(null, mLastMaudeBinDir);
 
 		if (maudeBinFile != null)
 		{
@@ -162,7 +162,7 @@ public class GeneralPathsController extends LoadablesController
 	@FXML
 	private void onNPAModulePathSearchBtnClick(ActionEvent event)
 	{
-		File npaModuleFile = showMaudePathDialog(mNPAModulePath, mLastNPAModuleDir);
+		File npaModuleFile = showMaudePathDialog(mLastNPAModuleDir);
 
 		if (npaModuleFile != null)
 		{

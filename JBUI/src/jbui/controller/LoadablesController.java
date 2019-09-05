@@ -159,10 +159,10 @@ public abstract class LoadablesController
 		mDialogPane.lookupButton(ButtonType.OK).setDisable(disable);
 	}
 
-	File showMaudePathDialog(TextField textField, File lastConfirmedDirectory)
+	File showMaudePathDialog(File lastConfirmedDirectory)
 	{
 		ExtensionFilter filter = new ExtensionFilter("Maude files", "*.maude");
-		return showPathDialog(textField, filter, lastConfirmedDirectory);
+		return showPathDialog(filter, lastConfirmedDirectory);
 	}
 
 	/**
@@ -174,7 +174,7 @@ public abstract class LoadablesController
 	 *                               previous search dialogs
 	 * @return Final choosen file
 	 */
-	File showPathDialog(TextField textField, ExtensionFilter filter, File lastConfirmedDirectory)
+	File showPathDialog(ExtensionFilter filter, File lastConfirmedDirectory)
 	{
 		FileChooser chooser = new FileChooser();
 		chooser.setInitialDirectory(lastConfirmedDirectory);

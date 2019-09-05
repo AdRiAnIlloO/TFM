@@ -92,7 +92,7 @@ public class ProtocolPathController extends LoadablesController
 	@FXML
 	private void onProtocolModuleSearchBtnClick(ActionEvent event)
 	{
-		File protocolModuleFile = showMaudePathDialog(mProtocolModulePath, mLastProtocolModuleDirectory);
+		File protocolModuleFile = showMaudePathDialog(mLastProtocolModuleDirectory);
 
 		if (protocolModuleFile != null)
 		{
