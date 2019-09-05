@@ -4,7 +4,7 @@ import java.io.File;
 
 import jbui.controller.ProtocolPathController;
 
-public class ProtocolModuleLoadDAO extends ModuleLoadDAO<ProtocolPathController>
+public class ProtocolModuleLoadDAO extends ControllerFileLoadDAO<ProtocolPathController>
 {
 	public ProtocolModuleLoadDAO(ProtocolPathController controller, File npaModuleFile)
 	{
@@ -14,12 +14,18 @@ public class ProtocolModuleLoadDAO extends ModuleLoadDAO<ProtocolPathController>
 	@Override
 	void handleResults()
 	{
-		mController.handleProtocolModuleLoad(mModuleTextInput);
+		mController.handleProtocolModuleLoad(mLoadedTextInput);
 	}
 
 	@Override
-	boolean shouldReplaceThisInList(DAO other)
+	boolean replace(DAO other)
 	{
-		return (other instanceof ProtocolModuleLoadDAO);
+		if (other instanceof ProtocolModuleLoadDAO)
+		{
+			replace((ProtocolModuleLoadDAO) other);
+			return true;
+		}
+
+		return false;
 	}
 }

@@ -154,6 +154,12 @@ public abstract class LoadablesController
 
 	abstract void postInitialize();
 
+	public void replaceLoadingModule()
+	{
+		assert (mLoadingModulesAmount > 1);
+		mLoadingModulesAmount--;
+	}
+
 	void setOkButtonDisable(boolean disable)
 	{
 		mDialogPane.lookupButton(ButtonType.OK).setDisable(disable);

@@ -24,26 +24,20 @@ public class DAOThread extends Task<Void>
 
 	void addDAO(DAO dao)
 	{
-		addDAO(dao, mIOExecutableDAOList, mIOExecutableDAOListLock);
-	}
+		mIOExecutableDAOListLock.lock();
+		int lastIndex = mIOExecutableDAOList.size();
+		mIOExecutableDAOList.add(dao);
 
-	private <T extends DAO> void addDAO(T dao, List<T> destList, Lock listLock)
-	{
-		listLock.lock();
-		int lastIndex = destList.size();
-		destList.add(dao);
-
-		for (int i = destList.size() - 2; i >= 0; i--)
+		for (int i = lastIndex - 1; i >= 0; i--)
 		{
-			if (destList.get(i).shouldReplaceThisInList(dao))
+			if (dao.replace(mIOExecutableDAOList.get(i)))
 			{
-				destList.remove(lastIndex);
-				destList.set(i, dao);
+				mIOExecutableDAOList.remove(i);
 				break;
 			}
 		}
 
-		listLock.unlock();
+		mIOExecutableDAOListLock.unlock();
 	}
 
 	@Override
@@ -75,7 +69,9 @@ public class DAOThread extends Task<Void>
 
 			if (resultsHandlingDAO != null)
 			{
-				addDAO(resultsHandlingDAO, mResultsHandleableDAOList, mResultsHandleableDAOListLock);
+				mResultsHandleableDAOListLock.lock();
+				mResultsHandleableDAOList.add(resultsHandlingDAO);
+				mResultsHandleableDAOListLock.unlock();
 			}
 		}
 

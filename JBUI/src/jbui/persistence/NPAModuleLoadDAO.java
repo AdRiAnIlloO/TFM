@@ -4,7 +4,7 @@ import java.io.File;
 
 import jbui.controller.GeneralPathsController;
 
-public class NPAModuleLoadDAO extends ModuleLoadDAO<GeneralPathsController>
+public class NPAModuleLoadDAO extends ControllerFileLoadDAO<GeneralPathsController>
 {
 	public NPAModuleLoadDAO(GeneralPathsController controller, File npaModuleFile)
 	{
@@ -14,15 +14,16 @@ public class NPAModuleLoadDAO extends ModuleLoadDAO<GeneralPathsController>
 	@Override
 	void handleResults()
 	{
-		mController.handleNPAModuleLoad(mModuleTextInput);
+		mController.handleNPAModuleLoad(mLoadedTextInput);
 	}
 
 	@Override
-	boolean shouldReplaceThisInList(DAO other)
+	boolean replace(DAO other)
 	{
 		if (other instanceof NPAModuleLoadDAO)
 		{
-			return shouldReplaceThisInList((NPAModuleLoadDAO) other);
+			replace((NPAModuleLoadDAO) other);
+			return true;
 		}
 
 		return false;

@@ -5,15 +5,15 @@ import java.io.IOException;
 
 import jbui.controller.GeneralPathsController;
 
-public class MaudeExecutableLoadDAO extends ResultsHandlingDAO
+public class MaudeExecutableLoadDAO extends LoadablesControllerDAO<GeneralPathsController>
 {
-	private GeneralPathsController mController;
 	private File mMaudeBinFile;
 	private String mMaudeBinPathName;
 	private Process mMaudeProcess;
 
 	public MaudeExecutableLoadDAO(GeneralPathsController controller, String maudeBinPathName, File maudeBinFile)
 	{
+		super(controller);
 		mController = controller;
 		mMaudeBinPathName = maudeBinPathName;
 		mMaudeBinFile = maudeBinFile;
@@ -54,11 +54,12 @@ public class MaudeExecutableLoadDAO extends ResultsHandlingDAO
 	}
 
 	@Override
-	boolean shouldReplaceThisInList(DAO other)
+	boolean replace(DAO other)
 	{
 		if (other instanceof MaudeExecutableLoadDAO)
 		{
-			return shouldReplaceThisInList(other);
+			replace((MaudeExecutableLoadDAO) other);
+			return true;
 		}
 
 		return false;

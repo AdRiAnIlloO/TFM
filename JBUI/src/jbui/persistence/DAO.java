@@ -11,7 +11,7 @@ public abstract class DAO
 		JBUI.getMaudeThinker().mDAOThread.addDAO(this);
 	}
 
-	boolean shouldReplaceThisInList(DAO other)
+	boolean replace(DAO other)
 	{
 		return false;
 	}

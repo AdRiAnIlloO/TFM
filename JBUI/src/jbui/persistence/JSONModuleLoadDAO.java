@@ -2,7 +2,7 @@ package jbui.persistence;
 
 import jbui.controller.GeneralPathsController;
 
-public class JSONModuleLoadDAO extends ModuleLoadDAO<GeneralPathsController>
+public class JSONModuleLoadDAO extends ControllerStreamLoadDAO<GeneralPathsController>
 {
 	public JSONModuleLoadDAO(GeneralPathsController controller, String jsonModulePathName)
 	{
@@ -12,15 +12,16 @@ public class JSONModuleLoadDAO extends ModuleLoadDAO<GeneralPathsController>
 	@Override
 	void handleResults()
 	{
-		mController.notifyJSONModuleLoad(mModuleTextInput);
+		mController.notifyJSONModuleLoad(mLoadedTextInput);
 	}
 
 	@Override
-	boolean shouldReplaceThisInList(DAO other)
+	boolean replace(DAO other)
 	{
 		if (other instanceof JSONModuleLoadDAO)
 		{
-			return shouldReplaceThisInList((JSONModuleLoadDAO) other);
+			replace((JSONModuleLoadDAO) other);
+			return true;
 		}
 
 		return false;
