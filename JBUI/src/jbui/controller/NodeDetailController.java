@@ -165,72 +165,75 @@ public class NodeDetailController // NO_UCD
 			for (int i = start, localAuxNodeIndex = 0; i < end; i++, localAuxNodeIndex++)
 			{
 				IdSystemNode.MsgElement msgElem = modelNode.mMsgElemSequences.get(i);
-				GridPane gridPane = new GridPane();
-				Label signatureLabel = new Label(msgElem.mSignature);
-				signatureLabel.getStyleClass().add("signatureLabel");
-				GridPane.setHalignment(signatureLabel, HPos.CENTER);
-				gridPane.add(signatureLabel, 1, 0);
-				Label msgLabel = new Label(msgElem.mMsg);
-				msgLabel.getStyleClass().add("msgLabel");
-				GridPane.setValignment(msgLabel, VPos.CENTER);
-				gridPane.add(msgLabel, 1, 1);
-				ImageView image;
-
 				TreeItem<String> auxTreeItem = new TreeItem<>(msgElem.mMsg);
 				msgSequenceItem.getChildren().add(auxTreeItem);
 
-				// Highlight the message if learned by intruder in the current state
-				if (auxModelNode.mMsgElemSequences.get(localAuxNodeIndex).mIsInSelfIntruderKnowledge)
+				if (msgElem.mIsChannelMsg)
 				{
-					msgLabel.pseudoClassStateChanged(INTRUDER_LEARNED_STATE_PSEUDO_CLASS, true);
-				}
+					GridPane gridPane = new GridPane();
+					Label signatureLabel = new Label(msgElem.mSignature);
+					signatureLabel.getStyleClass().add("signatureLabel");
+					GridPane.setHalignment(signatureLabel, HPos.CENTER);
+					gridPane.add(signatureLabel, 1, 0);
+					Label msgLabel = new Label(msgElem.mMsg);
+					msgLabel.getStyleClass().add("msgLabel");
+					GridPane.setValignment(msgLabel, VPos.CENTER);
+					gridPane.add(msgLabel, 1, 1);
+					ImageView image;
 
-				// Check if we must use default sides for the message info box.
-				// When the previous message has same signature than current, it means both
-				// belong to the same principal, so we keep the side for good.
-				if (prevMsgElem != null && !msgElem.mSignature.equals(prevMsgElem.mSignature))
-				{
+					// Highlight the message if learned by intruder in the current state
+					if (auxModelNode.mMsgElemSequences.get(localAuxNodeIndex).mIsInSelfIntruderKnowledge)
+					{
+						msgLabel.pseudoClassStateChanged(INTRUDER_LEARNED_STATE_PSEUDO_CLASS, true);
+					}
+
+					// Check if we must use default sides for the message info box.
+					// When the previous message has same signature than current, it means both
+					// belong to the same principal, so we keep the side for good.
+					if (prevMsgElem != null && !msgElem.mSignature.equals(prevMsgElem.mSignature))
+					{
+						if (msgInfoChanSide == LEFT_MSG_INFO_COLUMN_INDEX)
+						{
+							msgInfoChanSide = RIGHT_MSG_INFO_COLUMN_INDEX;
+						}
+						else
+						{
+							msgInfoChanSide = LEFT_MSG_INFO_COLUMN_INDEX;
+						}
+					}
+
 					if (msgInfoChanSide == LEFT_MSG_INFO_COLUMN_INDEX)
 					{
-						msgInfoChanSide = RIGHT_MSG_INFO_COLUMN_INDEX;
+						gridPane.setNodeOrientation(NodeOrientation.RIGHT_TO_LEFT);
+					}
+
+					if (msgElem.mIsSend)
+					{
+						image = new ImageView("/jbui/resource/send_arrow.png");
+
+						if (msgInfoChanSide == RIGHT_MSG_INFO_COLUMN_INDEX)
+						{
+							image.setNodeOrientation(NodeOrientation.RIGHT_TO_LEFT);
+						}
 					}
 					else
 					{
-						msgInfoChanSide = LEFT_MSG_INFO_COLUMN_INDEX;
+						image = new ImageView("/jbui/resource/recv_arrow.png");
+
+						if (msgInfoChanSide == LEFT_MSG_INFO_COLUMN_INDEX)
+						{
+							image.setNodeOrientation(NodeOrientation.RIGHT_TO_LEFT);
+						}
 					}
+
+					gridPane.add(image, 0, 1);
+					image.setPreserveRatio(true);
+					image.setFitHeight(msgLabel.getFont().getSize() * MSG_IMAGE_TO_TEXT_HEIGHT_FIT_RATIO);
+					mMsgFlowGridPane.add(gridPane, msgInfoChanSide, msgInfoGridPaneList.size());
+					msgInfoGridPaneList.add(gridPane);
+					gridPane.getStyleClass().add("msgInfoGridPane");
+					prevMsgElem = msgElem;
 				}
-
-				if (msgInfoChanSide == LEFT_MSG_INFO_COLUMN_INDEX)
-				{
-					gridPane.setNodeOrientation(NodeOrientation.RIGHT_TO_LEFT);
-				}
-
-				if (msgElem.mIsSend)
-				{
-					image = new ImageView("/jbui/resource/send_arrow.png");
-
-					if (msgInfoChanSide == RIGHT_MSG_INFO_COLUMN_INDEX)
-					{
-						image.setNodeOrientation(NodeOrientation.RIGHT_TO_LEFT);
-					}
-				}
-				else
-				{
-					image = new ImageView("/jbui/resource/recv_arrow.png");
-
-					if (msgInfoChanSide == LEFT_MSG_INFO_COLUMN_INDEX)
-					{
-						image.setNodeOrientation(NodeOrientation.RIGHT_TO_LEFT);
-					}
-				}
-
-				gridPane.add(image, 0, 1);
-				image.setPreserveRatio(true);
-				image.setFitHeight(msgLabel.getFont().getSize() * MSG_IMAGE_TO_TEXT_HEIGHT_FIT_RATIO);
-				mMsgFlowGridPane.add(gridPane, msgInfoChanSide, msgInfoGridPaneList.size());
-				msgInfoGridPaneList.add(gridPane);
-				gridPane.getStyleClass().add("msgInfoGridPane");
-				prevMsgElem = msgElem;
 			}
 
 			if (start > 0)

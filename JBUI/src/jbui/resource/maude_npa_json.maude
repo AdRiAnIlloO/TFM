@@ -22,6 +22,7 @@ mod MAUDE-NPA-JSON is
 	vars msgA msgB : Msg .
 	var n : Nat .
 	var props : Properties .
+	var resuscitated : Resuscitated . 
 	vars sMsgA sMsgB : SMsg .
 	var sMsgElem : SMsgElem .
 	var sMsgList : SMsgList$ .
@@ -89,9 +90,10 @@ mod MAUDE-NPA-JSON is
 	eq stringifyIsInIntruderK(msgA, intruderK) = "false" [owise] .
 
 	op unparseMsgSeqList : StrandSet$ IntruderKnowledge SMsgList -> String .
-	eq unparseMsgSeqList(strandSet, intruderK, +(msgA)) = "{ \"isSend\": true, \"msg\": " + unparseTerm(upTerm(msgA)) + ", \"signature\": " + findMsgSignature(+(msgA), strandSet) + ", \"isInIntruderK\": " + stringifyIsInIntruderK(msgA, removeIrr(msgA, intruderK)) + " }" .
-	eq unparseMsgSeqList(strandSet, intruderK, -(msgA)) = "{ \"isSend\": false, \"msg\": " + unparseTerm(upTerm(msgA)) + ", \"signature\": " + findMsgSignature(-(msgA), strandSet) + ", \"isInIntruderK\": " + stringifyIsInIntruderK(msgA, removeIrr(msgA, intruderK)) + " }" .
-	eq unparseMsgSeqList(strandSet, intruderK, lazyLearnt) = "" . 
+	eq unparseMsgSeqList(strandSet, intruderK, +(msgA)) = "{ \"isSend\": true, \"isChannelMsg\": true, \"msg\": " + unparseTerm(upTerm(msgA)) + ", \"signature\": " + findMsgSignature(+(msgA), strandSet) + ", \"isInIntruderK\": " + stringifyIsInIntruderK(msgA, removeIrr(msgA, intruderK)) + " }" .
+	eq unparseMsgSeqList(strandSet, intruderK, -(msgA)) = "{ \"isSend\": false, \"isChannelMsg\": true, \"msg\": " + unparseTerm(upTerm(msgA)) + ", \"signature\": " + findMsgSignature(-(msgA), strandSet) + ", \"isInIntruderK\": " + stringifyIsInIntruderK(msgA, removeIrr(msgA, intruderK)) + " }" .
+	eq unparseMsgSeqList(strandSet, intruderK, lazyLearnt) = "{ \"isSend\": false, \"isChannelMsg\": false, \"msg\": " + unparseTerm(upTerm(lazyLearnt)) + ", \"signature\": \"nil\", \"isInIntruderK\": true }" .
+	eq unparseMsgSeqList(strandSet, intruderK, resuscitated) = "{ \"isSend\": false, \"isChannelMsg\": false, \"msg\": " + unparseTerm(upTerm(resuscitated)) + ", \"signature\": \"nil\", \"isInIntruderK\": false }" .
 	eq unparseMsgSeqList(strandSet, intruderK, sMsgElem, sMsgList) = unparseMsgSeqList(strandSet, intruderK, sMsgElem) + ", " + unparseMsgSeqList(strandSet, intruderK, sMsgList) [owise] .
 
 	--- Given a System, returns a JSON representation
