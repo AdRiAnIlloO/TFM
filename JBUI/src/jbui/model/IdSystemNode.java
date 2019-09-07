@@ -62,9 +62,6 @@ public class IdSystemNode
 		}
 	}
 
-	// Used to advance from the last global tree depth
-	static int sMaxTreeDepth;
-
 	static void parseJSONIdSystemArray(JSONArray jsonIdSystemArray, boolean parseUIKeys) throws JSONException
 	{
 		for (int i = 0; i < jsonIdSystemArray.length(); i++)
