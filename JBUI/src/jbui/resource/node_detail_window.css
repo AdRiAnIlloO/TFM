@@ -1,3 +1,5 @@
+@import "node_color.css";
+
 #msgFlowScrollPane
 {
    -fx-background-color: transparent;
@@ -43,11 +45,11 @@
 	-fx-border-color: lightblue;
 }
 
-.msgGroupIdLabel
+.state_node_label
 {
 	-fx-padding: 5 10 5 10;
 	-fx-text-fill: white;
-	-fx-background-color: purple;
+	-fx-background-color: -state_node_color;
 }
 
 #fullInfoTreeView .tree-cell

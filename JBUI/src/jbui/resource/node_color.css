@@ -1,0 +1,22 @@
+.root
+{
+	-state_node_color: violet; /* Default */
+}
+
+.state_node_label
+{
+	-fx-font-size: 16;
+	-fx-font-weight: 600;
+}
+
+/* Last node in a search branch which is an initial state (attack source/origin) */
+.initial_state_node
+{
+	-state_node_color: limegreen;
+}
+
+/* Last node in a search branch which is not an initial state (continuity stopping) */
+.limit_state_node
+{
+	-state_node_color: gray;
+}

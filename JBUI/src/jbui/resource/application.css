@@ -1,13 +1,8 @@
-.root
-{
-	-state_node_color: violet; /* Default */
-}
+@import "node_color.css";
 
 .state_node_label
 {
-	-fx-font-size: 16;
 	-fx-fill: white;
-	-fx-font-weight: 600;
 }
 
 .state_node_label:folded
@@ -25,16 +20,4 @@
 .state_node:selected
 {
 	-fx-fill: derive(-state_node_color, -25.0%);
-}
-
-/* Last node in a search branch which is an initial state (attack source/origin) */
-.initial_state_node
-{
-	-state_node_color: red;
-}
-
-/* Last node in a search branch which is not an initial state (continuity stopping) */
-.limit_state_node
-{
-	-state_node_color: blue;
 }

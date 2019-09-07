@@ -179,7 +179,13 @@ public class NodeDetailController extends JSONTreeExportController // NO_UCD
 
 			// Build the related node ID indicator
 			Label label = new Label(auxModelNode.unparseIdUnspaced());
-			label.getStyleClass().add("msgGroupIdLabel");
+			label.getStyleClass().add("state_node_label");
+
+			if (auxModelNode.mStateType == IdSystemNode.StateType.Initial)
+			{
+				label.getStyleClass().add("initial_state_node");
+			}
+
 			VBox vBox = new VBox(label);
 			vBox.setAlignment(Pos.CENTER);
 			mMsgFlowGridPane.add(vBox, MSGS_GROUPS_ID_COLUMN_INDEX, start, 1, end - start);
