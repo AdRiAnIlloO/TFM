@@ -41,6 +41,7 @@ public class JBUI extends Application
 		launch(args);
 	}
 
+	public String DEFAULT_APP_TITLE = "Maude-NPA JBUI";
 	public File mLastTreeSaveDirectory;
 	public MainController mMainController;
 	public File mMaudeBinFile; // Maude bin
@@ -66,7 +67,7 @@ public class JBUI extends Application
 		BorderPane root = FXMLLoader.load(url);
 		Scene scene = new Scene(root);
 		primaryStage.setScene(scene);
-		primaryStage.setTitle("Maude-NPA JBUI");
+		primaryStage.setTitle(DEFAULT_APP_TITLE);
 		primaryStage.show();
 
 		// Set minimum window dimensions from computed FXML's, as a convenient UX factor

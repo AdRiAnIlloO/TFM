@@ -79,6 +79,9 @@ public class ProtocolPathController extends LoadablesController
 		if (buttonType == ButtonType.OK)
 		{
 			JBUI.sInstance.mProtocolModuleFile = mProtocolModuleFile;
+			String title = String.format(JBUI.sInstance.DEFAULT_APP_TITLE + " [%s]",
+					mProtocolModuleFile.getAbsolutePath());
+			JBUI.sInstance.mStage.setTitle(title);
 			JBUI.getMainController().disableProtocolSaving();
 
 			if (!JBUI.getMaudeThinker().tryLaunchProtocolNow(JBUI.getMaudeBinFile(), mProtocolModuleTextInput,
