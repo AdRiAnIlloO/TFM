@@ -60,6 +60,8 @@
 			<children>
 				<ToolBar>
 					<items>
+						<Button fx:id="mStateContentViewBtn" disable="true"
+							mnemonicParsing="false" text="View state content..." />
 						<Button fx:id="mSingleStepBtn" disable="true"
 							mnemonicParsing="false" text="Single step">
 							<tooltip>

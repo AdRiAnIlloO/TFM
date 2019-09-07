@@ -57,6 +57,9 @@ public class MainController extends JSONTreeExportController
 	Button mSingleStepBtn;
 
 	@FXML
+	private Button mStateContentViewBtn;
+
+	@FXML
 	private CheckMenuItem mTreeAutoSaveCheckItem;
 
 	@FXML
@@ -163,6 +166,11 @@ public class MainController extends JSONTreeExportController
 			showConfirmationAlert(ProtocolPathAlert.class);
 		});
 
+		mStateContentViewBtn.setOnAction(event ->
+		{
+			mSelectedNodeController.showDetailWindow();
+		});
+
 		mSingleStepBtn.setOnAction(event ->
 		{
 			assert (mSelectedNodeController != null);
@@ -247,6 +255,7 @@ public class MainController extends JSONTreeExportController
 	{
 		if (mSelectedNodeController == null)
 		{
+			mStateContentViewBtn.setDisable(false);
 			mSingleStepBtn.setDisable(false);
 			mAnyStepBtn.setDisable(false);
 			mFoldToggleBtn.setDisable(false);

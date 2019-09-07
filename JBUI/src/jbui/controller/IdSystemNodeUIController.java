@@ -49,6 +49,11 @@ public class IdSystemNodeUIController
 		MenuItem item = new MenuItem("View state content...");
 		ContextMenu contextMenu = new ContextMenu(item);
 
+		item.setOnAction(actionEvent ->
+		{
+			showDetailWindow();
+		});
+
 		if (mModelNode.mStateType == IdSystemNode.StateType.Default)
 		{
 			MenuItem singleDepthSearchItem = new MenuItem("Search from this node (single step)");
@@ -167,7 +172,7 @@ public class IdSystemNodeUIController
 		getPath().pseudoClassStateChanged(SELECTED_PSEUDO_CLASS, true);
 	}
 
-	private void showDetailWindow()
+	void showDetailWindow()
 	{
 		try
 		{
