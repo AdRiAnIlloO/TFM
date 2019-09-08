@@ -118,7 +118,7 @@ public class MaudeThinker extends AnimationTimer
 	{
 		for (int auxDepth = 1; auxDepth <= depth; auxDepth++)
 		{
-			MaudeCommand command = new JSONRunCommand(mAttackStateId, node.getDepth() + auxDepth,
+			MaudeCommand command = new JSONRunCommand(node, mAttackStateId, node.getDepth() + auxDepth,
 					node.unparseIdSpaced());
 			mMaudeInCommands.add(command);
 		}
@@ -151,7 +151,7 @@ public class MaudeThinker extends AnimationTimer
 		{
 			if (mRootIdSystemNode != null)
 			{
-				JBUI.getMainController().clearTree(mRootIdSystemNode.mUIController);
+				JBUI.getMainController().mFXTreeLayout.remove();
 				mRootIdSystemNode = null;
 				JBUI.getMainController().mTreeExportItem.setDisable(true);
 			}
@@ -190,7 +190,7 @@ public class MaudeThinker extends AnimationTimer
 				for (int i = 0; i < jsonTreeArray.length(); i++)
 				{
 					JSONArray jsonIdSystemArray = jsonTreeArray.getJSONArray(i);
-					IdSystemNode.parseJSONIdSystemArray(jsonIdSystemArray, true);
+					IdSystemNode.parseJSONIdSystemArray(mRootIdSystemNode, i, jsonIdSystemArray, true);
 				}
 			}
 			catch (JSONException e)

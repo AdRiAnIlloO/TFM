@@ -29,7 +29,7 @@ public class MainController extends JSONTreeExportController
 	@FXML
 	Button mFoldToggleBtn;
 
-	FXTreeLayout mFXTreeLayout;
+	public FXTreeLayout mFXTreeLayout;
 
 	@FXML
 	private MenuItem mProtocolLaunchBtn;
@@ -75,11 +75,6 @@ public class MainController extends JSONTreeExportController
 	{
 		double x = Math.max(0, scrollPaneWidth / 2 - treePaneWidth / 2);
 		mTreePane.setTranslateX(x);
-	}
-
-	public void clearTree(IdSystemNodeUIController rootController)
-	{
-		mFXTreeLayout.removeNodesRecursively(rootController.mScreenNode);
 	}
 
 	public IdSystemNodeUIController createChildNode(IdSystemNode modelNode, IdSystemNodeUIController parent)

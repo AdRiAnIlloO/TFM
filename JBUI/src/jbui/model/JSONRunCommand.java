@@ -6,14 +6,22 @@ import jbui.JBUI;
 
 class JSONRunCommand extends AnswerableMaudeCommand
 {
-	JSONRunCommand(int attackId, int depth)
-	{
-		this(attackId, depth, "1");
-	}
+	// Used to infer safe limit states (those which would not produce valid messages
+	// when searching further)
+	private final int mDepth;
+	private IdSystemNode mStartNode;
 
-	JSONRunCommand(int attackId, int depth, String startIdText)
+	JSONRunCommand(IdSystemNode startNode, int attackId, int depth, String startIdText)
 	{
 		super("red in MAUDE-NPA-JSON : runJSON[%s](%d, %d) .", startIdText, attackId, depth);
+		mStartNode = startNode;
+		mDepth = depth;
+	}
+
+	JSONRunCommand(int attackId, int depth)
+	{
+		this(JBUI.getMaudeThinker().mRootIdSystemNode, attackId, depth, "1");
+		assert (JBUI.getMaudeThinker().mRootIdSystemNode != null);
 	}
 
 	@Override
@@ -33,6 +41,11 @@ class JSONRunCommand extends AnswerableMaudeCommand
 		}
 		else if (!mIsAborted)
 		{
+			if (mStartNode == null)
+			{
+				mStartNode = JBUI.getMaudeThinker().mRootIdSystemNode;
+			}
+
 			// Get raw message and unescape trailing/ending/data quotes for valid JSON input
 			String jsonText = line.substring(prefix.length());
 			jsonText = jsonText.replaceAll("^\"|\"$", "").replace("\\", "");
@@ -40,7 +53,7 @@ class JSONRunCommand extends AnswerableMaudeCommand
 			try
 			{
 				JSONArray jsonIdSystemArray = new JSONArray(jsonText);
-				IdSystemNode.parseJSONIdSystemArray(jsonIdSystemArray, false);
+				IdSystemNode.parseJSONIdSystemArray(mStartNode, mDepth, jsonIdSystemArray, false);
 				JBUI.getMainController().tryAutoSaveCurrentProtocol();
 			}
 			catch (Exception e)

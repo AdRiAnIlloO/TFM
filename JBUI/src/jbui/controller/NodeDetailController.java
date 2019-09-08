@@ -181,6 +181,21 @@ public class NodeDetailController extends JSONTreeExportController // NO_UCD
 			Label label = new Label(auxModelNode.unparseIdUnspaced());
 			label.getStyleClass().add("state_node_label");
 
+			switch (auxModelNode.mStateType)
+			{
+			case Initial:
+			{
+				label.getStyleClass().add("initial_state_node");
+				break;
+			}
+			case LastReachable:
+			{
+				label.getStyleClass().add("limit_state_node");
+				break;
+			}
+			default:
+			}
+
 			if (auxModelNode.mStateType == IdSystemNode.StateType.Initial)
 			{
 				label.getStyleClass().add("initial_state_node");

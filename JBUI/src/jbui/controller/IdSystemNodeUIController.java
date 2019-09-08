@@ -110,9 +110,19 @@ public class IdSystemNodeUIController
 		mScreenNode.getIdText().getStyleClass().addAll("state_node_label");
 		mModelNode = modelNode;
 
-		if (modelNode.mStateType == IdSystemNode.StateType.Initial)
+		switch (modelNode.mStateType)
+		{
+		case Initial:
 		{
 			getPath().getStyleClass().add("initial_state_node");
+			break;
+		}
+		case LastReachable:
+		{
+			getPath().getStyleClass().add("limit_state_node");
+			break;
+		}
+		default:
 		}
 
 		getPath().setOnMousePressed(event ->

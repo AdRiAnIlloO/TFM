@@ -14,6 +14,22 @@ class NonRootIdSystemNode extends IdSystemNode
 	}
 
 	@Override
+	public boolean equals(Object obj)
+	{
+		if (obj == this)
+		{
+			return true;
+		}
+		else if (obj instanceof NonRootIdSystemNode)
+		{
+			NonRootIdSystemNode subNode = (NonRootIdSystemNode) obj;
+			return (super.equals(subNode) && mParent.equals(subNode.mParent));
+		}
+
+		return false;
+	}
+
+	@Override
 	int getDepth()
 	{
 		return mParent.getDepth() + 1;

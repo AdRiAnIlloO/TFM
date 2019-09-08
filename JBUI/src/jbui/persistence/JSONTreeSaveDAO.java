@@ -9,6 +9,7 @@ import org.json.JSONObject;
 
 import jbui.JBUI;
 import jbui.model.IdSystemNode;
+import jbui.model.IdSystemNode.StateType;
 
 abstract class JSONTreeSaveDAO extends ResultsHandlingDAO
 {
@@ -58,6 +59,11 @@ abstract class JSONTreeSaveDAO extends ResultsHandlingDAO
 		jsonSystem.put("strandSet", jsonStrands);
 		jsonIdSystem.put("system", jsonSystem);
 		jsonTreeLevels.getJSONArray(level).put(jsonIdSystem);
+
+		if (current.mStateType == StateType.LastReachable)
+		{
+			jsonIdSystem.put("isLastReachable", true);
+		}
 
 		if (JBUI.getMainController().mSelectedNodeController == current.mUIController)
 		{
