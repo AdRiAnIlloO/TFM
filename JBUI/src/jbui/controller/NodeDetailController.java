@@ -119,6 +119,7 @@ public class NodeDetailController extends JSONTreeExportController // NO_UCD
 		TreeItem<String> sectionsItem = new SectionStringTreeItem("Sections");
 		sectionsItem.getChildren().addAll(strandsItem, intruderKItem, msgSequenceItem, ghostsItem, propertiesItem);
 		mFullInfoTreeView.setRoot(sectionsItem);
+		mNotesTextArea.setText(modelNode.mNotes);
 
 		for (IdSystemNode.Strand strand : modelNode.mStrands)
 		{
@@ -385,8 +386,6 @@ public class NodeDetailController extends JSONTreeExportController // NO_UCD
 			saveCurrentProtocol();
 		});
 
-		mNotesTextArea.setText(mProtocolSaveRootNode.mNotes);
-
 		mNotesTextArea.textProperty().addListener((observable, oldText, newText) ->
 		{
 			mProtocolSaveRootNode.mNotes = newText;
@@ -400,6 +399,7 @@ public class NodeDetailController extends JSONTreeExportController // NO_UCD
 				}
 
 				mNotesSaveBtn.setDisable(false);
+				handleProtocolDataChanged();
 			}
 		});
 	}
@@ -408,7 +408,7 @@ public class NodeDetailController extends JSONTreeExportController // NO_UCD
 	{
 		try
 		{
-			handleCurrentProtocolSaveQueued(new NodeDetailsJSONTreeSaveDAO(this));
+			handleProtocolSaveQueued(new NodeDetailsJSONTreeSaveDAO(this));
 			mNotesSaveBtn.setDisable(true);
 		}
 		catch (JSONException e)

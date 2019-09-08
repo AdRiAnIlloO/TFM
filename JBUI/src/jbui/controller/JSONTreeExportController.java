@@ -28,11 +28,9 @@ class JSONTreeExportController
 		mProtocolSaveFileReminder.setText("(No export file specified)");
 	}
 
-	void handleCurrentProtocolSaveQueued(DAO dao)
+	void handleProtocolDataChanged()
 	{
-		dao.makeAsync();
-		mNumPendingProtocolSaves++;
-		mProtocolSaveStatus.setText("Saving protocol changes...");
+		mProtocolSaveStatus.setText("There are unsaved changes");
 	}
 
 	public void handleProtocolSaveDone()
@@ -41,6 +39,13 @@ class JSONTreeExportController
 		{
 			mProtocolSaveStatus.setText("All protocol changes saved");
 		}
+	}
+
+	void handleProtocolSaveQueued(DAO dao)
+	{
+		dao.makeAsync();
+		mNumPendingProtocolSaves++;
+		mProtocolSaveStatus.setText("Saving protocol changes...");
 	}
 
 	public boolean handleSaveDAOReplace()

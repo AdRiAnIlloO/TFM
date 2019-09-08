@@ -237,7 +237,7 @@ public class MainController extends JSONTreeExportController
 	{
 		try
 		{
-			handleCurrentProtocolSaveQueued(new MainControllerJSONTreeSaveDAO());
+			handleProtocolSaveQueued(new MainControllerJSONTreeSaveDAO());
 			mTreeQuickSaveItem.setDisable(true);
 		}
 		catch (JSONException e)
@@ -294,6 +294,7 @@ public class MainController extends JSONTreeExportController
 			}
 
 			mTreeQuickSaveItem.setDisable(false);
+			handleProtocolDataChanged();
 		}
 	}
 
