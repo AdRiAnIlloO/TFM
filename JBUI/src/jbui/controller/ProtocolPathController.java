@@ -88,14 +88,17 @@ public class ProtocolPathController extends LoadablesController
 					mJSONTreeArray))
 			{
 				Alert alert = new Alert(AlertType.WARNING);
-				alert.setContentText("Sorry, couldn't start the initial conversation with Maude");
+				alert.setContentText("ProtocolInitFailed");
 				alert.showAndWait();
 			}
 			else
 			{
-				LoadablesAlert<ProtocolInitController> alert = new LoadablesAlert<>("Protocol initialization",
-						String.format("Initialize the protocol '%s'", mProtocolModuleFile.getAbsolutePath()),
-						"view/ProtocolInitWindow.fxml");
+				String text = String.format(
+						JBUI.sInstance.mLocalizationResources.getString("ProtocolInitializationDesc"),
+						mProtocolModuleFile.getAbsolutePath());
+				LoadablesAlert<ProtocolInitController> alert = new LoadablesAlert<>("ProtocolInitialization",
+						"ProtocolInitializationDesc", "view/ProtocolInitWindow.fxml");
+				alert.setHeaderText(text);
 				alert.showAndWaitAndHandle();
 			}
 		}

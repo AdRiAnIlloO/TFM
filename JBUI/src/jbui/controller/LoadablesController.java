@@ -65,7 +65,7 @@ public abstract class LoadablesController
 	{
 		mDistinctFailedModules.add(moduleType.ordinal());
 		mDistinctOkModules.remove(moduleType.ordinal());
-		statusLabel.setText("Failed");
+		statusLabel.setText(JBUI.sInstance.mLocalizationResources.getString("Failed"));
 		statusLabel.setStyle("-fx-text-fill: red;");
 		handleModuleLoadWhileVisible();
 	}
@@ -91,7 +91,7 @@ public abstract class LoadablesController
 	void handleModuleLoadOkWhileVisible(Label statusLabel, Enum<?> moduleType)
 	{
 		mDistinctFailedModules.remove(moduleType.ordinal());
-		statusLabel.setText("OK");
+		statusLabel.setText(JBUI.sInstance.mLocalizationResources.getString("Ok"));
 		statusLabel.setStyle("-fx-text-fill: green;");
 		handleModuleLoadOkWhileVisible(moduleType);
 	}
@@ -128,7 +128,7 @@ public abstract class LoadablesController
 	void handleModulePathChange(Label statusLabel)
 	{
 		handleModulePathChange();
-		statusLabel.setText("Loading...");
+		statusLabel.setText(JBUI.sInstance.mLocalizationResources.getString("Loading"));
 		statusLabel.setStyle("-fx-text-fill: orange;");
 	}
 

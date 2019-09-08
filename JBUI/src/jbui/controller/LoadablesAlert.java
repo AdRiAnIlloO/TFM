@@ -13,11 +13,11 @@ class LoadablesAlert<T extends LoadablesController> extends Alert
 {
 	private T mController;
 
-	LoadablesAlert(String title, String headerText, String contentFXMLPathName)
+	LoadablesAlert(String titleToken, String headerToken, String contentFXMLPathName)
 	{
 		super(AlertType.CONFIRMATION);
-		setTitle(title);
-		setHeaderText(headerText);
+		setTitle(JBUI.sInstance.mLocalizationResources.getString(titleToken));
+		setHeaderText(JBUI.sInstance.mLocalizationResources.getString(headerToken));
 
 		// Disable the capability to confirm the dialog (we'll enable it once validated)
 		getDialogPane().lookupButton(ButtonType.OK).setDisable(true);
@@ -25,7 +25,7 @@ class LoadablesAlert<T extends LoadablesController> extends Alert
 		try
 		{
 			URL url = JBUI.getResource(contentFXMLPathName);
-			FXMLLoader loader = new FXMLLoader(url);
+			FXMLLoader loader = new FXMLLoader(url, JBUI.sInstance.mLocalizationResources);
 			Parent contentNode = loader.load();
 			getDialogPane().setContent(contentNode);
 			mController = loader.getController();

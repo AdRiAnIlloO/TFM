@@ -1,6 +1,7 @@
 package jbui.controller;
 
 import java.io.File;
+import java.util.ResourceBundle;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -20,24 +21,49 @@ class JSONTreeExportController
 	@FXML
 	private Label mProtocolSaveFileReminder;
 
+	private String mProtocolSaveReminderLocalizationToken = "UnspecifiedExportFile";
+
 	@FXML
 	private Label mProtocolSaveStatus;
 
+	private String mProtocolStatusLocalizationToken = "UndetectedOrUnsaveableChanges";
+
+	void changeLanguage(ResourceBundle resources)
+	{
+		JBUI.sInstance.mLocalizationResources = resources;
+		mProtocolSaveStatus.setText(resources.getString(mProtocolStatusLocalizationToken));
+		String text = JBUI.sInstance.mLocalizationResources.getString(mProtocolSaveReminderLocalizationToken);
+
+		if (mProtocolSaveFile != null)
+		{
+			text = String.format(text, mProtocolSaveFile.getAbsolutePath());
+		}
+
+		mProtocolSaveFileReminder.setText(text);
+	}
+
 	void disableProtocolSaving()
 	{
-		mProtocolSaveFileReminder.setText("(No export file specified)");
+		mProtocolStatusLocalizationToken = "UndetectedOrUnsaveableChanges";
+		mProtocolSaveReminderLocalizationToken = "UnspecifiedExportFile";
+		mProtocolSaveStatus.setText(JBUI.sInstance.mLocalizationResources.getString(mProtocolStatusLocalizationToken));
+		mProtocolSaveFileReminder
+				.setText(JBUI.sInstance.mLocalizationResources.getString(mProtocolSaveReminderLocalizationToken));
 	}
 
 	void handleProtocolDataChanged()
 	{
-		mProtocolSaveStatus.setText("There are unsaved changes");
+		mProtocolStatusLocalizationToken = "UnsavedChanges";
+		mProtocolSaveStatus.setText(JBUI.sInstance.mLocalizationResources.getString(mProtocolStatusLocalizationToken));
 	}
 
 	public void handleProtocolSaveDone()
 	{
 		if (--mNumPendingProtocolSaves < 1)
 		{
-			mProtocolSaveStatus.setText("All protocol changes saved");
+			mProtocolStatusLocalizationToken = "AllProtocolChangesSaved";
+			mProtocolSaveStatus
+					.setText(JBUI.sInstance.mLocalizationResources.getString(mProtocolStatusLocalizationToken));
 		}
 	}
 
@@ -45,7 +71,8 @@ class JSONTreeExportController
 	{
 		dao.makeAsync();
 		mNumPendingProtocolSaves++;
-		mProtocolSaveStatus.setText("Saving protocol changes...");
+		mProtocolStatusLocalizationToken = "SavingProtocolChanges";
+		mProtocolSaveStatus.setText(JBUI.sInstance.mLocalizationResources.getString(mProtocolStatusLocalizationToken));
 	}
 
 	public boolean handleSaveDAOReplace()
@@ -57,7 +84,11 @@ class JSONTreeExportController
 
 	void notifyNewSaveFile(File saveFile)
 	{
-		mProtocolSaveFileReminder.setText("Export file: [" + saveFile.getAbsolutePath() + "]");
+		mProtocolSaveReminderLocalizationToken = "NewExportFileNotice";
+		String text = String.format(
+				JBUI.sInstance.mLocalizationResources.getString(mProtocolSaveReminderLocalizationToken),
+				saveFile.getAbsolutePath());
+		mProtocolSaveFileReminder.setText(text);
 	}
 
 	File showJSONSavePathDialog(File lastConfirmedDirectory)

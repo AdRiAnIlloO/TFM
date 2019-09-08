@@ -26,8 +26,8 @@
 	<children>
 		<TextField fx:id="mMaudeBinPath" disable="true"
 			editable="false" maxHeight="-Infinity"
-			nodeOrientation="LEFT_TO_RIGHT"
-			promptText="E.g. maude.exe (on Windows)" GridPane.columnIndex="1">
+			nodeOrientation="LEFT_TO_RIGHT" promptText="%MaudeBinHelp"
+			GridPane.columnIndex="1">
 			<font>
 				<Font size="14.0" />
 			</font>
@@ -37,9 +37,8 @@
 		</TextField>
 		<TextField fx:id="mNPAModulePath" disable="true"
 			editable="false" maxHeight="-Infinity"
-			nodeOrientation="LEFT_TO_RIGHT"
-			promptText="E.g. maude-npa.maude (ideal)" GridPane.columnIndex="1"
-			GridPane.rowIndex="1">
+			nodeOrientation="LEFT_TO_RIGHT" promptText="%MaudeNPAModuleHelp"
+			GridPane.columnIndex="1" GridPane.rowIndex="1">
 			<font>
 				<Font size="14.0" />
 			</font>
@@ -49,7 +48,7 @@
 		</TextField>
 		<Button maxWidth="1.7976931348623157E308"
 			mnemonicParsing="false" onAction="#onMaudeBinPathSearchBtnClick"
-			text="Load Maude executable...">
+			text="%LoadMaudeBin">
 			<cursor>
 				<Cursor fx:constant="HAND" />
 			</cursor>
@@ -62,7 +61,7 @@
 		</Button>
 		<Button maxWidth="1.7976931348623157E308"
 			mnemonicParsing="false" onAction="#onNPAModulePathSearchBtnClick"
-			text="Load Maude-NPA module..." GridPane.rowIndex="1">
+			text="%LoadMaudeNPAModule" GridPane.rowIndex="1">
 			<cursor>
 				<Cursor fx:constant="HAND" />
 			</cursor>
@@ -73,7 +72,7 @@
 				<Insets left="10.0" right="5.0" />
 			</GridPane.margin>
 		</Button>
-		<Label fx:id="mMaudeBinStatus" text="Missing" textFill="RED"
+		<Label fx:id="mMaudeBinStatus" text="%Missing" textFill="RED"
 			GridPane.columnIndex="2">
 			<font>
 				<Font size="14.0" />
@@ -82,7 +81,7 @@
 				<Insets left="5.0" right="10.0" />
 			</GridPane.margin>
 		</Label>
-		<Label fx:id="mNPAModuleStatus" text="Missing" textFill="RED"
+		<Label fx:id="mNPAModuleStatus" text="%Missing" textFill="RED"
 			GridPane.columnIndex="2" GridPane.rowIndex="1">
 			<font>
 				<Font size="14.0" />

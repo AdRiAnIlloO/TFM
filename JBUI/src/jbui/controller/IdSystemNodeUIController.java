@@ -23,11 +23,11 @@ import jbui.model.IdSystemNode;
 
 public class IdSystemNodeUIController
 {
-	private static final String FOLD_LOCALIZATION_TOKEN = "Fold";
+	static final String FOLD_LOCALIZATION_TOKEN = "Fold";
 	private static final PseudoClass FOLDED_PSEUDO_CLASS = PseudoClass.getPseudoClass("folded");
 	private static final Font PREFERED_FONT = new Font(16);
 	private static final PseudoClass SELECTED_PSEUDO_CLASS = PseudoClass.getPseudoClass("selected");
-	private static final String UNFOLD_LOCALIZATION_TOKEN = "Unfold";
+	static final String UNFOLD_LOCALIZATION_TOKEN = "Unfold";
 
 	private IdSystemNode mModelNode;
 	public final OvalTextNode mScreenNode;
@@ -46,7 +46,7 @@ public class IdSystemNodeUIController
 
 	private void createAndShowContextMenu(MouseEvent event)
 	{
-		MenuItem item = new MenuItem("View state content...");
+		MenuItem item = new MenuItem(JBUI.sInstance.mLocalizationResources.getString("ViewStateContent"));
 		ContextMenu contextMenu = new ContextMenu(item);
 
 		item.setOnAction(actionEvent ->
@@ -56,9 +56,13 @@ public class IdSystemNodeUIController
 
 		if (mModelNode.mStateType == IdSystemNode.StateType.Default)
 		{
-			MenuItem singleDepthSearchItem = new MenuItem("Search from this node (single step)");
-			MenuItem inputDepthSearchItem = new MenuItem("Search from this node...");
-			MenuItem foldToggleItem = new MenuItem(mScreenNode.isFolded() ? "Unfold" : "Fold");
+			MenuItem singleDepthSearchItem = new MenuItem(
+					JBUI.sInstance.mLocalizationResources.getString("SingleStepExtended"));
+			MenuItem inputDepthSearchItem = new MenuItem(
+					JBUI.sInstance.mLocalizationResources.getString("SearchFromThisNode"));
+			MenuItem foldToggleItem = new MenuItem(
+					mScreenNode.isFolded() ? JBUI.sInstance.mLocalizationResources.getString(UNFOLD_LOCALIZATION_TOKEN)
+							: JBUI.sInstance.mLocalizationResources.getString(FOLD_LOCALIZATION_TOKEN));
 
 			singleDepthSearchItem.setOnAction(actionEvent ->
 			{
@@ -89,7 +93,8 @@ public class IdSystemNodeUIController
 	public void fold()
 	{
 		JBUI.getMainController().mFXTreeLayout.fold(mScreenNode);
-		JBUI.getMainController().mFoldToggleBtn.setText(UNFOLD_LOCALIZATION_TOKEN);
+		JBUI.getMainController().mFoldToggleBtn
+				.setText(JBUI.sInstance.mLocalizationResources.getString(UNFOLD_LOCALIZATION_TOKEN));
 		getPath().pseudoClassStateChanged(FOLDED_PSEUDO_CLASS, true);
 		getIdText().pseudoClassStateChanged(FOLDED_PSEUDO_CLASS, true);
 	}
@@ -158,7 +163,7 @@ public class IdSystemNodeUIController
 	void promptSearchDepthDialog()
 	{
 		TextInputDialog dialog = new TextInputDialog("0");
-		dialog.setHeaderText("Choose the search depth");
+		dialog.setHeaderText(JBUI.sInstance.mLocalizationResources.getString("ChooseSearchDepth"));
 		Validation.makeNumeric(dialog.getEditor());
 		Optional<String> result = dialog.showAndWait();
 
@@ -173,8 +178,9 @@ public class IdSystemNodeUIController
 
 	void select()
 	{
-		JBUI.getMainController().mFoldToggleBtn
-				.setText(mScreenNode.isFolded() ? UNFOLD_LOCALIZATION_TOKEN : FOLD_LOCALIZATION_TOKEN);
+		JBUI.getMainController().mFoldToggleBtn.setText(
+				mScreenNode.isFolded() ? JBUI.sInstance.mLocalizationResources.getString(UNFOLD_LOCALIZATION_TOKEN)
+						: JBUI.sInstance.mLocalizationResources.getString(FOLD_LOCALIZATION_TOKEN));
 		boolean disableButtons = (mModelNode.mStateType != IdSystemNode.StateType.Default);
 		JBUI.getMainController().mSingleStepBtn.setDisable(disableButtons);
 		JBUI.getMainController().mAnyStepBtn.setDisable(disableButtons);
@@ -187,13 +193,13 @@ public class IdSystemNodeUIController
 		try
 		{
 			URL url = JBUI.getResource("view/NodeDetailWindow.fxml");
-			FXMLLoader loader = new FXMLLoader(url);
+			FXMLLoader loader = new FXMLLoader(url, JBUI.sInstance.mLocalizationResources);
 			Region region = loader.load();
 			((NodeDetailController) loader.getController()).init(mModelNode);
 			Stage stage = new Stage();
 			Scene scene = new Scene(region);
-			String title = String.format("Details for node: %s [%s]", mModelNode.unparseIdUnspaced(),
-					JBUI.sInstance.mProtocolModuleFile.getAbsolutePath());
+			String title = String.format(JBUI.sInstance.mLocalizationResources.getString("DetailsOfNode"),
+					mModelNode.unparseIdUnspaced(), JBUI.sInstance.mProtocolModuleFile.getAbsolutePath());
 			stage.setTitle(title);
 			stage.setScene(scene);
 			stage.show();
@@ -207,7 +213,8 @@ public class IdSystemNodeUIController
 	void unfold()
 	{
 		JBUI.getMainController().mFXTreeLayout.unfold(mScreenNode);
-		JBUI.getMainController().mFoldToggleBtn.setText(FOLD_LOCALIZATION_TOKEN);
+		JBUI.getMainController().mFoldToggleBtn
+				.setText(JBUI.sInstance.mLocalizationResources.getString(FOLD_LOCALIZATION_TOKEN));
 		getPath().pseudoClassStateChanged(FOLDED_PSEUDO_CLASS, false);
 		getIdText().pseudoClassStateChanged(FOLDED_PSEUDO_CLASS, false);
 	}

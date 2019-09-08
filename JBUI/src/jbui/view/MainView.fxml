@@ -17,7 +17,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane minWidth="400.0" prefHeight="400.0"
+<BorderPane minWidth="600.0" prefHeight="400.0"
 	stylesheets="@../resource/application.css"
 	xmlns="http://javafx.com/javafx/8.0.171"
 	xmlns:fx="http://javafx.com/fxml/1"
@@ -25,30 +25,35 @@
 	<top>
 		<MenuBar>
 			<menus>
-				<Menu mnemonicParsing="false" text="File">
+				<Menu fx:id="mFileMenu" mnemonicParsing="false" text="%File">
 					<items>
-						<MenuItem mnemonicParsing="false"
-							onAction="#onMaudePathsBtnClick" text="Set Maude paths..." />
+						<MenuItem fx:id="mMaudePathsMenuItem"
+							mnemonicParsing="false" text="%SetMaudePaths" />
 						<SeparatorMenuItem mnemonicParsing="false" />
 						<MenuItem fx:id="mProtocolLaunchBtn" disable="true"
-							mnemonicParsing="false" text="Launch new protocol..." />
+							mnemonicParsing="false" text="%LaunchProtocol" />
 						<MenuItem fx:id="mTreeQuickSaveItem" disable="true"
-							mnemonicParsing="false" text="Save" />
+							mnemonicParsing="false" text="%Save" />
 						<MenuItem fx:id="mTreeExportItem" disable="true"
-							mnemonicParsing="false" text="Export active protocol..." />
-						<MenuItem mnemonicParsing="false"
-							onAction="#onExitBtnClick" text="Exit" />
+							mnemonicParsing="false" text="%ExportProtocol" />
+						<MenuItem fx:id="mExitMenuItem" mnemonicParsing="false"
+							text="%Exit" />
 					</items>
 				</Menu>
-				<Menu mnemonicParsing="false" text="Edit">
+				<Menu fx:id="mEditMenu" mnemonicParsing="false" text="%Edit">
 					<items>
 						<CheckMenuItem fx:id="mTreeAutoSaveCheckItem"
-							mnemonicParsing="false" text="Enable protocol autosave" />
+							mnemonicParsing="false" text="%EnableProtocolAutosave" />
 					</items>
 				</Menu>
-				<Menu disable="true" mnemonicParsing="false" text="Help">
+				<Menu fx:id="mLanguageMenu" mnemonicParsing="false"
+					text="%Language">
 					<items>
-						<MenuItem mnemonicParsing="false" text="About" />
+						<CheckMenuItem fx:id="mEnglishMenuItem"
+							disable="true" mnemonicParsing="false" selected="true"
+							text="%English" />
+						<CheckMenuItem fx:id="mSpanishMenuItem"
+							mnemonicParsing="false" text="%Spanish" />
 					</items>
 				</Menu>
 			</menus>
@@ -61,26 +66,25 @@
 				<ToolBar>
 					<items>
 						<Button fx:id="mStateContentViewBtn" disable="true"
-							mnemonicParsing="false" text="View state content..." />
+							mnemonicParsing="false" text="%ViewStateContent" />
 						<Button fx:id="mSingleStepBtn" disable="true"
-							mnemonicParsing="false" text="Single step">
+							mnemonicParsing="false" text="%SingleStep">
 							<tooltip>
-								<Tooltip
-									text="Search from this node by a single depth amount" />
+								<Tooltip fx:id="mSingleStepTooltip"
+									text="%SingleStepHelp" />
 							</tooltip>
 						</Button>
 						<Button fx:id="mAnyStepBtn" disable="true"
-							mnemonicParsing="false" text="Any steps...">
+							mnemonicParsing="false" text="%AnySteps">
 							<tooltip>
-								<Tooltip
-									text="Search from this node by an arbitrary depth amount" />
+								<Tooltip fx:id="mAnyStepsTooltip" text="%AnyStepsHelp" />
 							</tooltip>
 						</Button>
 						<Button fx:id="mFoldToggleBtn" disable="true"
-							mnemonicParsing="false" text="Fold">
+							mnemonicParsing="false" text="%Fold">
 							<tooltip>
-								<Tooltip
-									text="Hide or show the selected node's children, except indirect children of folded children" />
+								<Tooltip fx:id="mFoldToggleTooltip"
+									text="%FoldToggleHelp" />
 							</tooltip>
 						</Button>
 					</items>
@@ -104,14 +108,14 @@
 		<ToolBar>
 			<items>
 				<Label fx:id="mProtocolSaveStatus"
-					text="No changes detected, or saving is not available" />
+					text="%UndetectedOrUnsaveableChanges" />
 				<Separator orientation="VERTICAL">
 					<padding>
 						<Insets left="10.0" right="10.0" />
 					</padding>
 				</Separator>
 				<Label fx:id="mProtocolSaveFileReminder"
-					text="(No export file specified)" />
+					text="%UnspecifiedExportFile" />
 			</items>
 		</ToolBar>
 	</bottom>

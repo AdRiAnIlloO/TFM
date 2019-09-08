@@ -26,7 +26,7 @@
 	xmlns:fx="http://javafx.com/fxml/1"
 	fx:controller="jbui.controller.NodeDetailController">
 	<tabs>
-		<Tab closable="false" text="Message flow">
+		<Tab closable="false" text="%MessageFlow">
 			<content>
 				<ScrollPane id="msgFlowScrollPane"
 					fx:id="mMsgFlowScrollPane" pannable="true">
@@ -78,7 +78,7 @@
 				</ScrollPane>
 			</content>
 		</Tab>
-		<Tab closable="false" text="Full information">
+		<Tab closable="false" text="%FullInformation">
 			<content>
 				<AnchorPane>
 					<children>
@@ -89,19 +89,19 @@
 				</AnchorPane>
 			</content>
 		</Tab>
-		<Tab closable="false" text="Notes">
+		<Tab closable="false" text="%Notes">
 			<content>
 				<VBox>
 					<children>
 						<ToolBar>
 							<items>
 								<Button fx:id="mNotesSaveBtn" defaultButton="true"
-									mnemonicParsing="false" text="Save">
+									mnemonicParsing="false" text="%Save">
 									<font>
 										<Font size="13.0" />
 									</font>
 								</Button>
-								<CheckBox fx:id="mNotesAutoSaveCheck" text="Autosave"
+								<CheckBox fx:id="mNotesAutoSaveCheck" text="%Autosave"
 									translateX="10.0">
 									<font>
 										<Font size="13.0" />
@@ -118,14 +118,14 @@
 						<ToolBar>
 							<items>
 								<Label fx:id="mProtocolSaveStatus"
-									text="No changes detected, or saving is not available" />
+									text="%UndetectedOrUnsaveableChanges" />
 								<Separator orientation="VERTICAL">
 									<padding>
 										<Insets left="10.0" right="10.0" />
 									</padding>
 								</Separator>
 								<Label fx:id="mProtocolSaveFileReminder"
-									text="(No export file specified)" />
+									text="%UnspecifiedExportFile" />
 							</items>
 						</ToolBar>
 					</children>

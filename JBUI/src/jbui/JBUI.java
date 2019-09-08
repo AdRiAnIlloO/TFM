@@ -3,6 +3,8 @@ package jbui;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -42,12 +44,15 @@ public class JBUI extends Application
 	}
 
 	public String DEFAULT_APP_TITLE = "Maude-NPA JBUI";
+	public ResourceBundle mEnglishResources = ResourceBundle.getBundle("jbui.resource.strings", Locale.ENGLISH);
 	public File mLastTreeSaveDirectory;
+	public ResourceBundle mLocalizationResources;
 	public MainController mMainController;
 	public File mMaudeBinFile; // Maude bin
 	private MaudeThinker mMaudeThinker;
 	public File mNPAModuleFile;
 	public File mProtocolModuleFile;
+	public ResourceBundle mSpanishResources = ResourceBundle.getBundle("jbui.resource.strings", new Locale("es"));
 	public Stage mStage;
 
 	public JBUI()
@@ -64,7 +69,8 @@ public class JBUI extends Application
 
 		// Load main window
 		URL url = getClass().getResource("view/MainView.fxml");
-		BorderPane root = FXMLLoader.load(url);
+		mLocalizationResources = mEnglishResources;
+		BorderPane root = FXMLLoader.load(url, mLocalizationResources);
 		Scene scene = new Scene(root);
 		primaryStage.setScene(scene);
 		primaryStage.setTitle(DEFAULT_APP_TITLE);

@@ -111,12 +111,18 @@ public class NodeDetailController extends JSONTreeExportController // NO_UCD
 	@SuppressWarnings("unchecked")
 	void init(IdSystemNode modelNode)
 	{
-		TreeItem<String> strandsItem = new SectionStringTreeItem("Participants's strands");
-		TreeItem<String> intruderKItem = new SectionStringTreeItem("Intruder knowledge");
-		TreeItem<String> msgSequenceItem = new SectionStringTreeItem("Message sequence");
-		TreeItem<String> ghostsItem = new SectionStringTreeItem("Ghost list");
-		TreeItem<String> propertiesItem = new SectionStringTreeItem("Properties");
-		TreeItem<String> sectionsItem = new SectionStringTreeItem("Sections");
+		TreeItem<String> strandsItem = new SectionStringTreeItem(
+				JBUI.sInstance.mLocalizationResources.getString("ParticipantsStrands"));
+		TreeItem<String> intruderKItem = new SectionStringTreeItem(
+				JBUI.sInstance.mLocalizationResources.getString("IntruderKnowledge"));
+		TreeItem<String> msgSequenceItem = new SectionStringTreeItem(
+				JBUI.sInstance.mLocalizationResources.getString("MessageSequence"));
+		TreeItem<String> ghostsItem = new SectionStringTreeItem(
+				JBUI.sInstance.mLocalizationResources.getString("GhostList"));
+		TreeItem<String> propertiesItem = new SectionStringTreeItem(
+				JBUI.sInstance.mLocalizationResources.getString("Properties"));
+		TreeItem<String> sectionsItem = new SectionStringTreeItem(
+				JBUI.sInstance.mLocalizationResources.getString("Sections"));
 		sectionsItem.getChildren().addAll(strandsItem, intruderKItem, msgSequenceItem, ghostsItem, propertiesItem);
 		mFullInfoTreeView.setRoot(sectionsItem);
 		mNotesTextArea.setText(modelNode.mNotes);
@@ -125,8 +131,10 @@ public class NodeDetailController extends JSONTreeExportController // NO_UCD
 		{
 			TreeItem<String> signatureItem = new SectionStringTreeItem(strand.mSignature);
 			strandsItem.getChildren().add(signatureItem);
-			TreeItem<String> unknownMsgsItem = new SectionStringTreeItem("Unknown messages");
-			TreeItem<String> knownMsgsItem = new SectionStringTreeItem("Known messages");
+			TreeItem<String> unknownMsgsItem = new SectionStringTreeItem(
+					JBUI.sInstance.mLocalizationResources.getString("UnknownMessages"));
+			TreeItem<String> knownMsgsItem = new SectionStringTreeItem(
+					JBUI.sInstance.mLocalizationResources.getString("KnownMessages"));
 			signatureItem.getChildren().addAll(unknownMsgsItem, knownMsgsItem);
 
 			for (String msg : strand.mUnknownSMsgs)

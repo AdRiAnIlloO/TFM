@@ -1,24 +1,27 @@
 package jbui.controller;
 
 import java.io.File;
-import java.io.IOException;
+import java.net.URL;
+import java.util.ResourceBundle;
 
 import org.json.JSONException;
 
 import fxtreelayout.FXTreeLayout;
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckMenuItem;
+import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.Pane;
 import jbui.JBUI;
 import jbui.model.IdSystemNode;
 import jbui.persistence.MainControllerJSONTreeSaveDAO;
 
-public class MainController extends JSONTreeExportController
+public class MainController extends JSONTreeExportController implements Initializable
 {
 	private static int GAP_BETWEEN_LEVELS = 40;
 	private static int GAP_BETWEEN_NODES = 20;
@@ -27,9 +30,33 @@ public class MainController extends JSONTreeExportController
 	Button mAnyStepBtn;
 
 	@FXML
+	private Tooltip mAnyStepsTooltip;
+
+	@FXML
+	private Menu mEditMenu;
+
+	@FXML
+	private CheckMenuItem mEnglishMenuItem;
+
+	@FXML
+	private MenuItem mExitMenuItem;
+
+	@FXML
+	private Menu mFileMenu;
+
+	@FXML
 	Button mFoldToggleBtn;
 
+	@FXML
+	private Tooltip mFoldToggleTooltip;
+
 	public FXTreeLayout mFXTreeLayout;
+
+	@FXML
+	private Menu mLanguageMenu;
+
+	@FXML
+	private MenuItem mMaudePathsMenuItem;
 
 	@FXML
 	private MenuItem mProtocolLaunchBtn;
@@ -57,6 +84,12 @@ public class MainController extends JSONTreeExportController
 	Button mSingleStepBtn;
 
 	@FXML
+	private Tooltip mSingleStepTooltip;
+
+	@FXML
+	private CheckMenuItem mSpanishMenuItem;
+
+	@FXML
 	private Button mStateContentViewBtn;
 
 	@FXML
@@ -75,6 +108,41 @@ public class MainController extends JSONTreeExportController
 	{
 		double x = Math.max(0, scrollPaneWidth / 2 - treePaneWidth / 2);
 		mTreePane.setTranslateX(x);
+	}
+
+	private void changeLanguage(ResourceBundle resources, CheckMenuItem curCheckItem, CheckMenuItem nextCheckItem)
+	{
+		super.changeLanguage(resources);
+		nextCheckItem.setSelected(true);
+		nextCheckItem.setDisable(true);
+		curCheckItem.setSelected(false);
+		curCheckItem.setDisable(false);
+		mFileMenu.setText(resources.getString("File"));
+		mMaudePathsMenuItem.setText(resources.getString("SetMaudePaths"));
+		mProtocolLaunchBtn.setText(resources.getString("LaunchProtocol"));
+		mTreeQuickSaveItem.setText(resources.getString("Save"));
+		mTreeExportItem.setText(resources.getString("ExportProtocol"));
+		mExitMenuItem.setText(resources.getString("Exit"));
+		mTreeAutoSaveCheckItem.setText(resources.getString("EnableProtocolAutosave"));
+		mEditMenu.setText(resources.getString("Edit"));
+		mLanguageMenu.setText(resources.getString("Language"));
+		mEnglishMenuItem.setText(resources.getString("English"));
+		mSpanishMenuItem.setText(resources.getString("Spanish"));
+		mStateContentViewBtn.setText(resources.getString("ViewStateContent"));
+		mSingleStepBtn.setText(resources.getString("SingleStep"));
+		mSingleStepTooltip.setText(resources.getString("SingleStepHelp"));
+		mAnyStepBtn.setText(resources.getString("AnySteps"));
+		mAnyStepsTooltip.setText(resources.getString("AnyStepsHelp"));
+		mFoldToggleTooltip.setText(resources.getString("FoldToggleHelp"));
+
+		if (mSelectedNodeController == null || !mSelectedNodeController.mScreenNode.isFolded())
+		{
+			mFoldToggleBtn.setText(resources.getString(IdSystemNodeUIController.FOLD_LOCALIZATION_TOKEN));
+		}
+		else
+		{
+			mFoldToggleBtn.setText(resources.getString(IdSystemNodeUIController.UNFOLD_LOCALIZATION_TOKEN));
+		}
 	}
 
 	public IdSystemNodeUIController createChildNode(IdSystemNode modelNode, IdSystemNodeUIController parent)
@@ -100,10 +168,12 @@ public class MainController extends JSONTreeExportController
 		mTreeQuickSaveItem.setDisable(true);
 	}
 
-	@FXML
-	private void initialize()
+	@Override
+	public void initialize(URL location, ResourceBundle resources)
 	{
 		JBUI.sInstance.mMainController = this;
+		mMaudePathsMenuItem.setOnAction(actionEvent -> showConfirmationAlert(GeneralPathsAlert.class));
+		mExitMenuItem.setOnAction(actionEvent -> Platform.exit());
 
 		// Automate updating of desired left margin for selected node
 		mScrollPane.hvalueProperty().addListener((listener) ->
@@ -185,12 +255,10 @@ public class MainController extends JSONTreeExportController
 			if (mSelectedNodeController.mScreenNode.isFolded())
 			{
 				mSelectedNodeController.unfold();
-				mFoldToggleBtn.setText("Fold");
 			}
 			else
 			{
 				mSelectedNodeController.fold();
-				mFoldToggleBtn.setText("Unfold");
 			}
 
 			tryAutoSaveCurrentProtocol();
@@ -217,19 +285,17 @@ public class MainController extends JSONTreeExportController
 			}
 		});
 
+		mEnglishMenuItem.setOnAction(actionEvent ->
+		{
+			changeLanguage(JBUI.sInstance.mEnglishResources, mSpanishMenuItem, mEnglishMenuItem);
+		});
+
+		mSpanishMenuItem.setOnAction(actionEvent ->
+		{
+			changeLanguage(JBUI.sInstance.mSpanishResources, mEnglishMenuItem, mSpanishMenuItem);
+		});
+
 		// Prompt earlier the general paths controller setup window, for convenience
-		showConfirmationAlert(GeneralPathsAlert.class);
-	}
-
-	@FXML
-	private void onExitBtnClick(ActionEvent event)
-	{
-		Platform.exit();
-	}
-
-	@FXML
-	private void onMaudePathsBtnClick(ActionEvent event) throws IOException
-	{
 		showConfirmationAlert(GeneralPathsAlert.class);
 	}
 
