@@ -192,6 +192,9 @@ public class IdSystemNodeUIController
 			((NodeDetailController) loader.getController()).init(mModelNode);
 			Stage stage = new Stage();
 			Scene scene = new Scene(region);
+			String title = String.format("Details for node: %s [%s]", mModelNode.unparseIdUnspaced(),
+					JBUI.sInstance.mProtocolModuleFile.getAbsolutePath());
+			stage.setTitle(title);
 			stage.setScene(scene);
 			stage.show();
 		}
