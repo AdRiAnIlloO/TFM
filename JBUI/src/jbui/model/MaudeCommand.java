@@ -27,11 +27,11 @@ class MaudeCommand
 		return false;
 	}
 
-	void send(BufferedWriter bufferedWrited) throws IOException
+	void send(BufferedWriter bufferedWriter) throws IOException
 	{
-		bufferedWrited.write(mCommandText);
-		bufferedWrited.newLine();
-		bufferedWrited.flush();
+		bufferedWriter.write(mCommandText);
+		bufferedWriter.newLine();
+		bufferedWriter.flush();
 	}
 
 	AnswerableMaudeCommand toAnswerable()
