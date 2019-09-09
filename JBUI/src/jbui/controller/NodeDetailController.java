@@ -368,7 +368,7 @@ public class NodeDetailController extends JSONTreeExportController // NO_UCD
 		{
 			if (mouseEvent.getButton() == MouseButton.SECONDARY)
 			{
-				MenuItem copyMenuItem = new MenuItem("Copy");
+				MenuItem copyMenuItem = new MenuItem(JBUI.sInstance.mLocalizationResources.getString("Copy"));
 				ContextMenu contextMenu = new ContextMenu(copyMenuItem);
 				contextMenu.show(mFullInfoTreeView.getScene().getWindow(), mouseEvent.getScreenX(),
 						mouseEvent.getScreenY());
