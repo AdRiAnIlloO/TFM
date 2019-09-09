@@ -76,12 +76,12 @@ public class IdSystemNode
 			if (JBUI.getMaudeThinker().mRootIdSystemNode != null)
 			{
 				JBUI.getMaudeThinker().mRootIdSystemNode.mMsgElemSequences = node.mMsgElemSequences;
-				JBUI.getMaudeThinker().mRootIdSystemNode.parseUIKeys(jsonIdSystem);
 			}
 			else
 			{
 				JBUI.getMaudeThinker().mRootIdSystemNode = node;
 				node.mUIController = JBUI.getMainController().createFXTreeLayout(node);
+				node.tryParseUIKeys(jsonIdSystem, parseUIKeys);
 				JBUI.getMainController().mTreeExportItem.setDisable(false);
 			}
 		}
@@ -117,11 +117,7 @@ public class IdSystemNode
 				NonRootIdSystemNode node = new NonRootIdSystemNode(idElems.getLast(), jsonIdSystem);
 				JBUI.getMaudeThinker().mRootIdSystemNode.insert(node, idElems);
 				levelNodes.add(node);
-
-				if (parseUIKeys)
-				{
-					node.parseUIKeys(jsonIdSystem);
-				}
+				((IdSystemNode) node).tryParseUIKeys(jsonIdSystem, parseUIKeys);
 			}
 
 			startNode.inferLastReachableNodes(levelNodes, depth, startNode.getDepth());
@@ -302,19 +298,23 @@ public class IdSystemNode
 		jsonArray.put(jsonId);
 	}
 
-	void parseUIKeys(JSONObject jsonIdSystem)
+	private void tryParseUIKeys(JSONObject jsonIdSystem, boolean parseUIKeys)
 	{
-		if (jsonIdSystem.optBoolean("isSelected"))
+		if (parseUIKeys)
 		{
-			JBUI.getMainController().selectScreenNode(mUIController);
+			if (jsonIdSystem.optBoolean("isSelected"))
+			{
+				JBUI.getMainController().selectScreenNode(mUIController);
+			}
+
+			if (jsonIdSystem.optBoolean("isFolded"))
+			{
+				mUIController.fold();
+			}
+
+			mNotes = jsonIdSystem.optString("notes", null);
 		}
 
-		if (jsonIdSystem.optBoolean("isFolded"))
-		{
-			mUIController.fold();
-		}
-
-		mNotes = jsonIdSystem.optString("notes");
 	}
 
 	protected String unparseId(String separator)

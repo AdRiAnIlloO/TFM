@@ -85,6 +85,7 @@ public class NodeDetailController extends JSONTreeExportController // NO_UCD
 	private TextArea mNotesTextArea;
 
 	public final IdSystemNode mProtocolSaveRootNode;
+	private IdSystemNode mSelectedNode;
 
 	public NodeDetailController()
 	{
@@ -111,6 +112,7 @@ public class NodeDetailController extends JSONTreeExportController // NO_UCD
 	@SuppressWarnings("unchecked")
 	void init(IdSystemNode modelNode)
 	{
+		mSelectedNode = modelNode;
 		TreeItem<String> strandsItem = new SectionStringTreeItem(
 				JBUI.sInstance.mLocalizationResources.getString("ParticipantsStrands"));
 		TreeItem<String> intruderKItem = new SectionStringTreeItem(
@@ -396,18 +398,21 @@ public class NodeDetailController extends JSONTreeExportController // NO_UCD
 
 		mNotesTextArea.textProperty().addListener((observable, oldText, newText) ->
 		{
-			mProtocolSaveRootNode.mNotes = newText;
-
-			if (mProtocolSaveFile != null)
+			if (newText != null)
 			{
-				if (mNotesAutoSaveCheck.isSelected())
-				{
-					saveCurrentProtocol();
-					return;
-				}
+				mSelectedNode.mNotes = newText;
 
-				mNotesSaveBtn.setDisable(false);
-				handleProtocolDataChanged();
+				if (mProtocolSaveFile != null)
+				{
+					if (mNotesAutoSaveCheck.isSelected())
+					{
+						saveCurrentProtocol();
+						return;
+					}
+
+					mNotesSaveBtn.setDisable(false);
+					handleProtocolDataChanged();
+				}
 			}
 		});
 	}
