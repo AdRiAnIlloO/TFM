@@ -56,7 +56,8 @@ public abstract class LoadablesController
 		if (!mDistinctFailedModules.isEmpty())
 		{
 			Alert alert = new Alert(AlertType.WARNING);
-			alert.setContentText(mDistinctFailedModules.size() + " loaded path(s) failed and will be ignored");
+			alert.setContentText(mDistinctFailedModules.size()
+					+ JBUI.sInstance.mLocalizationResources.getString("IgnoringFailedPaths"));
 			alert.showAndWait();
 		}
 	}
